@@ -149,13 +149,6 @@ const handleSelectionChange = (val: Door[]) => {
   // multipleSelection.value = val
 }
 
-const handleEnter = (event: KeyboardEvent) => {
-  if (event.key === 'Enter' || event.keyCode === 13) {
-    // 触发 el-button 的点击事件
-    doSearchDoorSheets()
-  }
-};
-
 // 获取柜门表单一览
 const doSearchDoorSheets = async () => {
   if (useRetailStore.customers.length == 0) {
@@ -176,6 +169,7 @@ const doDelete = (ID: any) => {
   remove(ID).then(async () => {
     deleteDialogVisible.value = false
     await doSearchDoorSheets()
+    doors.length = 0
   })
 }
 

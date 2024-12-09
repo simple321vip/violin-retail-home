@@ -6,7 +6,10 @@
 2. 客户管理页面
 提供手机号，名字，查询客户和所属订单。
 
-3. 
+### 发布命令
 
+    npm run build
+    docker build -t ccr.ccs.tencentyun.com/violin/violin-retail-home:0.5 .
+    docker push ccr.ccs.tencentyun.com/violin/violin-retail-home:0.5
 
 

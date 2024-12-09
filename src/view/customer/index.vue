@@ -38,7 +38,8 @@
 
     <el-dialog width="30%" size="small" v-model="dialogFormVisible"
       :title="operate == Operate.UPDATE ? '客户信息更新' : '新建客户'">
-      <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog" @on-submit="doSubmit" />
+      <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog"
+        @on-submit="submitCallback" />
     </el-dialog>
 
     <el-dialog width="20%" size="small" v-model="dialogVisible" title="确认删除么？">
@@ -102,24 +103,32 @@ const handleEdit = (target: Customer) => {
   dialogFormVisible.value = true
 }
 
-const doSearch = async () => {
-  if (useRetailStore.customers.length == 0) {
-    await useRetailStore.getAllCustomers()
-  }
+// doSearch 检索
+const doSearch = () => {
   filterSelection.value = useRetailStore.customers.filter(customer => customer.Name.includes(filter.value) || customer.Phone.includes(filter.value))
 }
 
-const doDelete = (delete_id: any) => {
-  let query = delete_id
-  remove(query).then(async () => {
-    await useRetailStore.getAllCustomers().finally(() => {
-      doSearch()
+// submitCallback 新增，删除，更新后的Callback
+const submitCallback = async () => {
+  await useRetailStore.getAllCustomers()
+  if (filter.value) {
+    filterSelection.value = useRetailStore.customers.filter(customer => customer.Name.includes(filter.value) || customer.Phone.includes(filter.value))
+  } else {
+    filterSelection.value = useRetailStore.customers
+  }
+  dialogFormVisible.value = false
+  dialogVisible.value = false
+}
+
+// doDelete 执行删除
+const doDelete = async (delete_id: any) => {
+  let ID = delete_id
+  await remove(ID)
+    .then(async () => {
+      await submitCallback()
+    }).finally(() => {
       dialogVisible.value = false
     })
-  }).finally(() => {
-    dialogVisible.value = false
-  })
-
 }
 
 // 关闭弹窗
@@ -128,13 +137,6 @@ const closeDialog = () => {
   dialogVisible.value = false
 }
 
-const doSubmit = async () => {
-  await useRetailStore.getAllCustomers().then(() => {
-    dialogFormVisible.value = false
-  })
-  doSearch()
-  dialogFormVisible.value = false
-}
 // 复制转换成功的数值，并提示 复制成功 信息
 const copyNumber = (record: Customer) => {
   copy(record.Phone)
@@ -143,10 +145,14 @@ const copyNumber = (record: Customer) => {
     message: h('i', { style: 'color: teal' }, '复制成功'),
   })
 }
+
 // 数据初始化前，页面不显示
 onMounted(async () => {
-  await useRetailStore.getAllCustomers()
-});
+  // 不存在客户数据时，全件获取客户数据
+  if (useRetailStore.customers.length == 0) {
+    await useRetailStore.getAllCustomers()
+  }
+})
 </script>
 
 <style scoped>

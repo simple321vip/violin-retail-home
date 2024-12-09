@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, h } from 'vue'
+import { reactive, ref, h, onMounted } from 'vue'
 import { CopyDocument } from "@element-plus/icons-vue"
 import { ElButton, ElTable, ElDialog, ElTableColumn, ElForm, ElRow, ElCol, ElFormItem, ElInput } from 'element-plus'
 import copy from 'copy-to-clipboard'
@@ -203,6 +203,14 @@ const doSubmitDoor = async (door: Door) => {
   })
   doorDialogVisible.value = false
 }
+
+// 数据初始化前，页面不显示
+onMounted(async () => {
+  // 获取客户一览
+  if (useRetailStore.customers.length == 0) {
+    await useRetailStore.getAllCustomers()
+  }
+})
 </script>
 
 <style scoped>

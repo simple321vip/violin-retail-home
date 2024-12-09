@@ -54,6 +54,7 @@ const concel = () => {
 const submit = () => {
   let phones = useRetailStore.customers.map(item => item.Phone)
   if (phones.includes(props.dialog_form.Phone)) {
+    console.log(props.dialog_form)
     if (props.dialog_form.Name === undefined || props.dialog_form.Name.length == 0) {
       console.log(2)
       ElMessage({
@@ -65,17 +66,28 @@ const submit = () => {
       return
     }
 
-    if (props.dialog_form.Amount === undefined || props.dialog_form.Amount < props.dialog_form.Doors.length) {
+    // if (props.dialog_form.Amount === undefined || props.dialog_form.Amount < props.dialog_form.Doors.length) {
+    if (props.dialog_form.Amount === undefined) {
       console.log(1)
       ElMessage({
         message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-          h('span', null, '柜门数量只能增加不能减少, 或者不能为空'),
+          h('span', null, '柜门数量不能为空'),
         ]),
         type: 'error'
       })
       return
     }
     if (props.operate_code == Operate.UPDATE) {
+      if (props.dialog_form.Amount < props.dialog_form.Doors.length) {
+        console.log(1)
+        ElMessage({
+          message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+            h('span', null, '柜门数量不能减少'),
+          ]),
+          type: 'error'
+        })
+        return
+      }
       update(props.dialog_form.ID, props.dialog_form).then(() => {
         emit('on-submit')
       })

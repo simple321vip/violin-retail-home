@@ -43,9 +43,9 @@ const update = (ID: string, data: Object) => {
   })
 }
 
-const remove = (query: number) => {
+const remove = (ID: number) => {
   return service({
-    url: '/retail/api/v1/customer/' + query,
+    url: '/retail/api/v1/customer/' + ID,
     method: 'DELETE',
   })
 }

@@ -16,6 +16,13 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
+        path: '/order',
+        component: () => import('@/view/goodtype/index.vue'),
+        meta: {
+          name: '下单'
+        }
+      },
+      {
         path: '/customers',
         component: () => import('@/view/customer/index.vue'),
         meta: {
@@ -44,10 +51,10 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
-        path: '/order',
-        component: () => import('@/view/goodtype/index.vue'),
+        path: '/brand',
+        component: () => import('@/view/brand/index.vue'),
         meta: {
-          name: '下单'
+          name: '品牌管理'
         }
       },
       {

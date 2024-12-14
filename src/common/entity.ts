@@ -82,6 +82,13 @@ interface GoodType {
   Comment: string
 }
 
+// 品牌
+interface Brand {
+  ID: string,
+  Name: string,
+  Comment: string
+}
+
 // 订单
 interface Order {
   ID: string,
@@ -92,4 +99,5 @@ interface Order {
 
 
 
-export { Tenant, Theme, DataTimeline, Event, Customer, Door, Filter, DoorSheet, GoodType, Goods, Order }
+export { Tenant, Theme, DataTimeline, Event, }
+export { Customer, Door, Filter, DoorSheet, GoodType, Goods, Order, Brand }

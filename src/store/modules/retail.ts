@@ -1,15 +1,17 @@
 import { acceptHMRUpdate, defineStore } from "pinia"
-import { computed, reactive } from "vue"
-import { get, remove } from '@/api/customer'
+import { reactive } from "vue"
+import { get } from '@/api/customer'
 import { get as getGoods } from '@/api/goods'
 import { get as getGoodType } from '@/api/goodType'
-import { Customer, Goods, GoodType } from "@/common/entity"
+import { get as getBrands } from '@/api/brand'
+import { Customer, Goods, GoodType, Brand } from "@/common/entity"
 
 export const retailStore = defineStore('customers', () => {
 
   const customers = reactive<Customer[]>([])
   const goods = reactive<Goods[]>([])
   const goodTypes = reactive<GoodType[]>([])
+  const brands = reactive<Brand[]>([])
 
   const getAllCustomers = async () => {
     customers.length = 0
@@ -44,13 +46,18 @@ export const retailStore = defineStore('customers', () => {
     getGoodType().then(res => {
       if (res) {
         res.data.forEach((item: GoodType) => {
-          // const row = {
-          //   ID: item.ID,
-          //   Name: item.Name,
-          //   Phone: item.Phone,
-          //   Comment: item.Comment,
-          // }
-          // goods.push(row)
+          goodTypes.push(item)
+        })
+      }
+    })
+  }
+
+  const getAllBrands = async () => {
+    brands.length = 0
+    getBrands().then(res => {
+      if (res) {
+        res.data.forEach((item: Brand) => {
+          brands.push(item)
         })
       }
     })
@@ -62,7 +69,9 @@ export const retailStore = defineStore('customers', () => {
     goods,
     getAllGoods,
     goodTypes,
-    getAllGoodTypes
+    getAllGoodTypes,
+    brands,
+    getAllBrands
   }
 })
 

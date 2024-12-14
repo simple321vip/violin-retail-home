@@ -1,45 +1,26 @@
 <template>
   <div class="master">
-    <!-- <el-form>
-      <el-row>
-        <el-col :span="6">
-          <el-form-item>
-            <el-input v-model="filter" placeholder="请输入" clearable />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" @click="doSearch">检索</el-button>
-        </el-col>
-      </el-row>
-    </el-form> -->
-
     <div class="create_dialog">
-      <el-button type="primary" @click="handleInsert" v-show="useTenantStore.tenant">新建货物分类</el-button>
+      <el-button type="primary" @click="handleInsert">新建货物分类</el-button>
     </div>
 
-    <el-table ref="multipleTableRef" :data="useRetailStore.customers" @selection-change="handleSelectionChange"
-      style="width: 100%">
-      <el-table-column type="selection" width="30" />
-      <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="Name" label="名称" width="100" />
-      <el-table-column prop="Comment" label="备注" width="60" />
+    <el-table ref="multipleTableRef" :data="useRetailStore.goodTypes" style="width: 100%">
+      <el-table-column prop="ID" label="序号" width="60" />
+      <el-table-column prop="Name" label="分类名称" width="120" />
+      <el-table-column prop="Comment" label="备注" width="120" />
       <el-table-column label="操作">
         <template #default="scope">
-          <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
-            <CopyDocument />
-          </el-icon>
-          <el-button class="click-icon" size="small" @click="handleEdit(scope.$index, scope.row)"
-            v-show="useTenantStore.tenant">编辑
+          <el-button class="click-icon" size="small" @click="handleEdit(scope.row)">编辑
           </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)"
-            v-show="useTenantStore.tenant">删除
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog width="30%" size="small" v-model="dialogFormVisible" :title="operate == Operate.UPDATE ? '分类更新' : '新建分类'">
-      <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog" @on-submit="doSubmit" />
+      <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog"
+        @on-submit="submitCallback" />
     </el-dialog>
 
     <el-dialog width="20%" size="small" v-model="dialogVisible" title="确认删除么？">
@@ -49,35 +30,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, h, onMounted } from 'vue'
-import { CopyDocument } from "@element-plus/icons-vue"
-import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElForm, ElRow, ElCol, ElFormItem, ElInput } from 'element-plus'
+import { reactive, ref, onMounted } from 'vue'
+import { ElButton, ElTable, ElDialog, ElTableColumn } from 'element-plus'
 import Dialog from './dialog.vue'
 import delete_dialog from '@/components/operate/deleteDialog.vue'
-import { tenantStore } from '@/store/modules/tenant'
 import { retailStore } from '@/store/modules/retail'
-import { get, remove } from '@/api/goodType'
+import { remove } from '@/api/goodType'
 import { Operate } from '@/common/enum'
 import { GoodType } from '@/common/entity'
-// obtain user infomation 
-const useTenantStore = tenantStore()
-const useRetailStore = retailStore()
 
-// 表单格式
-let filter = ref("")
+const useRetailStore = retailStore()
 
 // 操作code
 let operate = ref<Number>(0)
-
 // 响应式dialog数据
-const currentDialogData = reactive<GoodType>({
-  ID: "",
-  Name: '',
-  Comment: '',
-})
-const multipleTableRef = ref<InstanceType<typeof ElTable>>()
-const multipleSelection = ref<GoodType[]>([])
-
+const currentDialogData = reactive<GoodType>({} as GoodType)
 // dialog表示flag
 let dialogFormVisible = ref(false)
 let dialogVisible = ref(false)
@@ -91,33 +58,21 @@ const handleInsert = () => {
   dialogFormVisible.value = true
 }
 // 操作-》删除
-const handleDelete = (index: number, target: GoodType) => {
+const handleDelete = (target: GoodType) => {
   currentDialogData.ID = target.ID
   operate.value = Operate.DELETE;
   dialogVisible.value = true
 }
 // 操作-》编辑
-const handleEdit = (index: number, target: GoodType) => {
+const handleEdit = (target: GoodType) => {
   Object.assign(currentDialogData, target)
   operate.value = Operate.UPDATE;
   dialogFormVisible.value = true
 }
 
-const handleSelectionChange = (val: GoodType[]) => {
-  multipleSelection.value = val
-}
-
-const doSearch = () => {
-
-}
-
-const doDelete = (delete_id: any) => {
-  let query = delete_id
-  remove(query).then((res) => {
-    useRetailStore.customers.length = 0
-    res.data.forEach((customer: GoodType) => {
-      // useRetailStore.customers.push(customer)
-    })
+const doDelete = async (ID: any) => {
+  await remove(ID).then((res) => {
+    submitCallback(res.data)
   }).finally(() => {
     dialogVisible.value = false
   })
@@ -125,25 +80,24 @@ const doDelete = (delete_id: any) => {
 
 const closeDialog = () => {
   dialogFormVisible.value = false
+  dialogVisible.value = false
 }
-const doSubmit = (data: any) => {
-  useRetailStore.customers.length = 0
-  data.forEach((customer: GoodType) => {
-    // useRetailStore.customers.push(customer)
+
+// submitCallback 增删改查后的回调
+const submitCallback = (data: any) => {
+  useRetailStore.goodTypes.length = 0
+  data.forEach((goodType: GoodType) => {
+    useRetailStore.goodTypes.push(goodType)
   })
   dialogFormVisible.value = false
 }
-// 复制转换成功的数值，并提示 复制成功 信息
-const copyNumber = (record: GoodType) => {
-  ElNotification({
-    title: '',
-    message: h('i', { style: 'color: teal' }, '复制成功'),
-  })
-}
+
 // 数据初始化前，页面不显示
 onMounted(async () => {
-
-});
+  if (useRetailStore.goodTypes.length == 0) {
+    await useRetailStore.getAllGoodTypes()
+  }
+})
 </script>
 
 <style scoped>
@@ -162,4 +116,4 @@ onMounted(async () => {
 .create_dialog {
   margin: 10px;
 }
-</style>@/store/modules/retail@/api/goodType
+</style>

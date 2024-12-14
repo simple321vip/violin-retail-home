@@ -1,14 +1,8 @@
 <template>
   <div class="dashboard">
     <el-form :model="dialog_form">
-      <el-form-item v-show="props.operate_code == Operate.UPDATE" label="ID" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.ID" :disabled="true" />
-      </el-form-item>
       <el-form-item label="分类名" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Name" autocomplete="off" />
-      </el-form-item>
-      <el-form-item label="单位" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.Unit" autocomplete="off" />
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Comment" autocomplete="off" />
@@ -28,7 +22,9 @@ import { h } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/goodType'
-import { Operate } from '@/common/enum';
+import { Operate } from '@/common/enum'
+import { retailStore } from '@/store/modules/retail'
+const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
 
@@ -58,14 +54,21 @@ const submit = () => {
     })
     return
   }
+  if (useRetailStore.goodTypes.filter(goodType => goodType.Name == data.Name).length > 1) {
+    ElMessage({
+      message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+        h('span', null, '分类名称已存在'),
+      ]),
+      type: 'error'
+    })
+    return
+  }
 
   if (props.operate_code == Operate.UPDATE) {
     update(data.ID, data).then((res) => {
       emit('on-submit', res.data)
     })
   } else if (props.operate_code == Operate.CREATE) {
-    // 后端为int型必须给指
-    data.ID = -1
     create(data).then((res) => {
       emit('on-submit', res.data)
     })

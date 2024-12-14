@@ -8,13 +8,17 @@
         <el-input v-model="dialog_form.Name" autocomplete="off" />
       </el-form-item>
       <el-form-item label="分类名" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.GoodType" autocomplete="off" />
+        <el-select v-model="dialog_form.GoodType" placeholder="Select" size="large">
+          <el-option v-for="item in useRetailStore.goodTypes" :key="item.ID" :label="item.Name" :value="item" />
+        </el-select>
       </el-form-item>
       <el-form-item label="品牌" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Brand" autocomplete="off" />
       </el-form-item>
       <el-form-item label="单位" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.Unit" autocomplete="off" />
+        <el-select v-model="dialog_form.Unit" placeholder="Select" size="large">
+          <el-option v-for="item in options" :key="item" :label="item" :value="item" />
+        </el-select>
       </el-form-item>
       <el-form-item label="单价" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Price" autocomplete="off" />
@@ -34,10 +38,12 @@
 
 <script setup lang="ts">
 import { h } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElSelect, ElOption } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/goods'
-import { Operate } from '@/common/enum';
+import { Operate } from '@/common/enum'
+import { retailStore } from '@/store/modules/retail'
+const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
 
@@ -46,6 +52,10 @@ type Props = {
   operate_code: Number
 }
 const props = defineProps<Props>()
+
+const options = [
+  "个", "袋", "张", "盒", "箱", "捆",
+]
 
 const emit = defineEmits(['on-concel', 'on-submit'])
 const concel = () => {

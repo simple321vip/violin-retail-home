@@ -24,6 +24,7 @@ import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/goodType'
 import { Operate } from '@/common/enum'
 import { retailStore } from '@/store/modules/retail'
+import { CheckNameExist } from '@/service/search'
 const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
@@ -54,7 +55,7 @@ const submit = () => {
     })
     return
   }
-  if (useRetailStore.goodTypes.filter(goodType => goodType.Name == data.Name).length > 1) {
+  if (CheckNameExist(useRetailStore.goodTypes, data, props.operate_code)) {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '分类名称已存在'),

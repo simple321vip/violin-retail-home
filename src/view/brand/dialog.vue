@@ -24,6 +24,7 @@ import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/brand'
 import { Operate } from '@/common/enum'
 import { retailStore } from '@/store/modules/retail'
+import { CheckNameExist } from '@/service/search'
 const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
@@ -54,7 +55,7 @@ const submit = () => {
     })
     return
   }
-  if (useRetailStore.brands.filter(brand => brand.Name == data.Name).length > 1) {
+  if (CheckNameExist(useRetailStore.brands, data, props.operate_code)) {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '品牌已存在'),

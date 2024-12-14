@@ -30,6 +30,9 @@ import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/customer'
 import { Operate } from '@/common/enum'
 import { isPhoneNumber } from '@/utils/number'
+import { CheckPhoneExist } from '@/service/search'
+import { retailStore } from '@/store/modules/retail'
+const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
 
@@ -72,6 +75,16 @@ const submit = () => {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '电话格式不正确，请输入正确的11位电话号'),
+      ]),
+      type: 'error'
+    })
+    return
+  }
+
+  if (CheckPhoneExist(useRetailStore.customers, data, props.operate_code)) {
+    ElMessage({
+      message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+        h('span', null, '电话号已存在'),
       ]),
       type: 'error'
     })

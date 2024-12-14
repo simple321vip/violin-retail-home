@@ -34,6 +34,30 @@
         <img src="../../assets/dashboard.png" class="gva-top-card-right">
       </div>
     </div>
+
+    <div class="gva-card-box">
+      <el-card class="gva-card quick-entrance">
+        <template #header>
+          <div class="card-header">
+            <span>快捷入口</span>
+          </div>
+        </template>
+        <el-row :gutter="20">
+          <el-col v-for="(card, key) in toolCards" :key="key" :span="4" :xs="8" class="quick-entrance-items"
+            @click="toTarget(card.name)">
+            <div class="quick-entrance-item">
+              <div class="quick-entrance-item-icon" :style="{ backgroundColor: card.bg }">
+                <el-icon>
+                  <component :is="card.icon" :style="{ color: card.color }" />
+                </el-icon>
+              </div>
+              <p>{{ card.label }}</p>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+      <!-- <div class="quick-entrance-title"></div> -->
+    </div>
     <div class="gva-card-box">
       <div class="gva-card">
         <div class="card-header">
@@ -77,47 +101,47 @@ const statistics = ref({
 
 const toolCards = ref([
   {
-    label: 'Jenkins',
-    icon: 'camera',
-    name: 'Jenkins',
+    label: 'Order',
+    icon: 'cpu',
+    name: 'Order',
     color: '#ff9c6e',
     bg: 'rgba(255, 156, 110,.3)'
   },
-  {
-    label: 'argo-cd',
-    icon: 'monitor',
-    name: 'argocd',
-    color: '#69c0ff',
-    bg: 'rgba(92, 219, 211,.3)'
-  },
-  {
-    label: 'wiki',
-    icon: 'document',
-    name: 'wiki',
-    color: '#b37feb',
-    bg: 'rgba(185, 192, 255,.3)'
-  },
-  {
-    label: 'scrum',
-    icon: 'cpu',
-    name: 'scrum',
-    color: '#ffd666',
-    bg: 'rgba(255, 214, 102,.3)'
-  },
-  {
-    label: 'wiki主页编辑',
-    icon: 'document-checked',
-    name: 'profile',
-    color: '#ff85c0',
-    bg: 'rgba(255, 133, 192,.3)'
-  },
-  {
-    label: '关于我们',
-    icon: 'user',
-    name: 'about',
-    color: '#5cdbd3',
-    bg: 'rgba(92, 219, 211,.3)'
-  }
+  // {
+  //   label: 'argo-cd',
+  //   icon: 'monitor',
+  //   name: 'argocd',
+  //   color: '#69c0ff',
+  //   bg: 'rgba(92, 219, 211,.3)'
+  // },
+  // {
+  //   label: 'wiki',
+  //   icon: 'document',
+  //   name: 'wiki',
+  //   color: '#b37feb',
+  //   bg: 'rgba(185, 192, 255,.3)'
+  // },
+  // {
+  //   label: 'scrum',
+  //   icon: 'cpu',
+  //   name: 'scrum',
+  //   color: '#ffd666',
+  //   bg: 'rgba(255, 214, 102,.3)'
+  // },
+  // {
+  //   label: 'wiki主页编辑',
+  //   icon: 'document-checked',
+  //   name: 'profile',
+  //   color: '#ff85c0',
+  //   bg: 'rgba(255, 133, 192,.3)'
+  // },
+  // {
+  //   label: '关于我们',
+  //   icon: 'user',
+  //   name: 'about',
+  //   color: '#5cdbd3',
+  //   bg: 'rgba(92, 219, 211,.3)'
+  // }
 ])
 
 
@@ -125,25 +149,25 @@ const toolCards = ref([
 const toTarget = (name: string) => {
   // router.push({ name })
   switch (name) {
-    case 'Jenkins':
-      window.open('https://www.violin-home.cn/jenkins/', '_blank')
+    case 'order':
+      // window.open('https://www.violin-home.cn/jenkins/', '_blank')
       break;
-    case 'argocd':
-      window.open('https://www.violin-home.cn/argo-cd/', '_blank')
-      break;
-    case 'wiki':
-      window.open('https://www.violin-home.cn/docs#/guan/', '_blank')
-      break;
-    case 'scrum':
-      window.open('https://www.leangoo.com/kanban/board_list?#/home/list', '_blank')
-      break;
-    case 'profile':
-      if (useSettingsStore.settings.profileName) {
-        openTag()
-        break;
-      }
-      profileNameCreateDialogVisible.value = true
-      break;
+    // case 'argocd':
+    //   window.open('https://www.violin-home.cn/argo-cd/', '_blank')
+    //   break;
+    // case 'wiki':
+    //   window.open('https://www.violin-home.cn/docs#/guan/', '_blank')
+    //   break;
+    // case 'scrum':
+    //   window.open('https://www.leangoo.com/kanban/board_list?#/home/list', '_blank')
+    //   break;
+    // case 'profile':
+    //   if (useSettingsStore.settings.profileName) {
+    //     openTag()
+    //     break;
+    //   }
+    //   profileNameCreateDialogVisible.value = true
+    //   break;
   }
 }
 

@@ -17,14 +17,14 @@
     <!-- <template #footer> -->
     <span class="dialog-footer">
       <el-button @click="concel">取消</el-button>
-      <el-button type="primary" @click="submit">提交</el-button>
+      <el-button type="primary" :disabled="isClicked" @click="submit">提交</el-button>
     </span>
     <!-- </template> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue'
+import { ref, h } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/customer'
@@ -38,18 +38,25 @@ type Props = {
   operate_code: Number
 }
 const props = defineProps<Props>()
+let isClicked = ref(false)
 
 const emit = defineEmits(['on-concel', 'on-submit'])
 const concel = () => {
   emit('on-concel')
 }
 const submit = () => {
+  isClicked.value = true
+  setTimeout(() => {
+    isClicked.value = false;
+  }, 2000)
+
   const data = {
     ID: props.dialog_form.ID,
     Phone: props.dialog_form.Phone,
     Name: props.dialog_form.Name,
     Comment: props.dialog_form.Comment,
   }
+
 
   if (data.Name == "" || data.Phone == "") {
     ElMessage({
@@ -76,8 +83,6 @@ const submit = () => {
       emit('on-submit', res.data)
     })
   } else if (props.operate_code == Operate.CREATE) {
-    // 后端为int型必须给指
-    data.ID = -1
     create(data).then((res) => {
       emit('on-submit', res)
     })

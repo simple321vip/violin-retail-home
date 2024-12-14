@@ -4,11 +4,20 @@
       <el-form-item v-show="props.operate_code == Operate.UPDATE" label="ID" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.ID" :disabled="true" />
       </el-form-item>
-      <el-form-item label="分类名" :label-width="formLabelWidth">
+      <el-form-item label="货品名称" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Name" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="分类名" :label-width="formLabelWidth">
+        <el-input v-model="dialog_form.GoodType" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="品牌" :label-width="formLabelWidth">
+        <el-input v-model="dialog_form.Brand" autocomplete="off" />
       </el-form-item>
       <el-form-item label="单位" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Unit" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="单价" :label-width="formLabelWidth">
+        <el-input v-model="dialog_form.Price" autocomplete="off" />
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Comment" autocomplete="off" />
@@ -27,7 +36,7 @@
 import { h } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
-import { update, create } from '@/api/goodType'
+import { update, create } from '@/api/goods'
 import { Operate } from '@/common/enum';
 
 const formLabelWidth = '80px'
@@ -46,13 +55,24 @@ const submit = () => {
   const data = {
     ID: props.dialog_form.ID,
     Name: props.dialog_form.Name,
+    Unit: props.dialog_form.Unit,
     Comment: props.dialog_form.Comment,
   }
 
   if (data.Name == "") {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-        h('span', null, '请填写分类名称'),
+        h('span', null, '请填写货品名称'),
+      ]),
+      type: 'error'
+    })
+    return
+  }
+
+  if (data.Unit == "") {
+    ElMessage({
+      message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
+        h('span', null, '请填写货品名称'),
       ]),
       type: 'error'
     })
@@ -64,10 +84,8 @@ const submit = () => {
       emit('on-submit', res.data)
     })
   } else if (props.operate_code == Operate.CREATE) {
-    // 后端为int型必须给指
-    data.ID = -1
-    create(data).then((res) => {
-      emit('on-submit', res.data)
+    create(data).then(() => {
+      emit('on-submit')
     })
   }
 }
@@ -86,4 +104,4 @@ const submit = () => {
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
-</style>@/api/goodType
+</style>

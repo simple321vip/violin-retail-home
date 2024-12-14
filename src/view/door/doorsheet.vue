@@ -24,7 +24,7 @@
     <!-- <template #footer> -->
     <span class="dialog-footer">
       <el-button @click="concel">取消</el-button>
-      <el-button type="primary" @click="submit">提交</el-button>
+      <el-button type="primary" :disabled="isClicked" @click="submit">提交</el-button>
     </span>
     <!-- </template> -->
   </div>
@@ -46,12 +46,17 @@ type Props = {
   operate_code: Number
 }
 const props = defineProps<Props>()
+let isClicked = ref(false)
 
 const emit = defineEmits(['on-concel', 'on-submit'])
 const concel = () => {
   emit('on-concel')
 }
 const submit = () => {
+  isClicked.value = true
+  setTimeout(() => {
+    isClicked.value = false;
+  }, 2000)
   let phones = useRetailStore.customers.map(item => item.Phone)
   if (phones.includes(props.dialog_form.Phone)) {
     console.log(props.dialog_form)

@@ -1,9 +1,9 @@
 <template>
   <div class="dashboard">
     <el-form :model="dialog_form">
-      <el-form-item v-show="props.operate_code == Operate.UPDATE" label="ID" :label-width="formLabelWidth">
+      <!-- <el-form-item v-show="props.operate_code == Operate.UPDATE" label="ID" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.ID" :disabled="true" />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="分类名" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Name" autocomplete="off" />
       </el-form-item>
@@ -27,8 +27,8 @@
 import { h } from 'vue'
 import { ElMessage } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
-import { update, create } from '@/api/goodType'
-import { Operate } from '@/common/enum';
+// import { update, create } from '@/api/good_type'
+// import { Operate } from '@/common/enum';
 
 const formLabelWidth = '80px'
 
@@ -59,17 +59,17 @@ const submit = () => {
     return
   }
 
-  if (props.operate_code == Operate.UPDATE) {
-    update(data.ID, data).then((res) => {
-      emit('on-submit', res.data)
-    })
-  } else if (props.operate_code == Operate.CREATE) {
-    // 后端为int型必须给指
-    data.ID = -1
-    create(data).then((res) => {
-      emit('on-submit', res.data)
-    })
-  }
+  // if (props.operate_code == Operate.UPDATE) {
+  //   update(data.ID, data).then((res) => {
+  //     emit('on-submit', res.data)
+  //   })
+  // } else if (props.operate_code == Operate.CREATE) {
+  //   // 后端为int型必须给指
+  //   data.ID = -1
+  //   create(data).then((res) => {
+  //     emit('on-submit', res.data)
+  //   })
+  // }
 }
 
 
@@ -86,4 +86,4 @@ const submit = () => {
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
-</style>@/api/goodType
+</style>

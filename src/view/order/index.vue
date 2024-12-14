@@ -12,16 +12,20 @@
         </el-col>
       </el-row>
     </el-form> -->
-
-    <div class="create_dialog">
-      <el-button type="primary" @click="handleInsert" v-show="useTenantStore.tenant">新建货物分类</el-button>
+    <!-- <div class="create_dialog">
+      <el-button type="primary" @click="createDoorSheet" v-show="useTenantStore.tenant">新建柜门表单</el-button>
+    </div> -->
+    <div class="tag_list">
+      <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+        <el-radio-button :label="item.Name" v-for="(item) in goodTypes" :value="item.ID" />
+      </el-radio-group>
+      <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
+        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
     </div>
-
-    <el-table ref="multipleTableRef" :data="useRetailStore.customers" @selection-change="handleSelectionChange"
-      style="width: 100%">
+    <!-- <el-table :data="useRetailStore.customers" @selection-change="handleSelectionChange" style="width: 100%">
       <el-table-column type="selection" width="30" />
       <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="Name" label="名称" width="100" />
+      <el-table-column prop="Name" label="货品名称" width="100" />
       <el-table-column prop="Comment" label="备注" width="60" />
       <el-table-column label="操作">
         <template #default="scope">
@@ -36,32 +40,31 @@
           </el-button>
         </template>
       </el-table-column>
-    </el-table>
+    </el-table> -->
 
-    <el-dialog width="30%" size="small" v-model="dialogFormVisible" :title="operate == Operate.UPDATE ? '分类更新' : '新建分类'">
+    <!-- <el-dialog width="30%" size="small" v-model="dialogFormVisible" :title="operate == Operate.UPDATE ? '分类更新' : '新建分类'">
       <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog" @on-submit="doSubmit" />
     </el-dialog>
 
     <el-dialog width="20%" size="small" v-model="dialogVisible" title="确认删除么？">
       <delete_dialog :delete_id="currentDialogData.ID" @on-submit="doDelete"></delete_dialog>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, h, onMounted } from 'vue'
 import { CopyDocument } from "@element-plus/icons-vue"
-import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElForm, ElRow, ElCol, ElFormItem, ElInput } from 'element-plus'
+import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElTag, ElRadioGroup, ElRadioButton, ElFormItem, ElInput } from 'element-plus'
 import Dialog from './dialog.vue'
-import delete_dialog from '@/components/operate/deleteDialog.vue'
-import { tenantStore } from '@/store/modules/tenant'
-import { retailStore } from '@/store/modules/retail'
+import { GoodType, Goods, Order } from '@/common/entity'
+// import { retailStore } from '@/store/modules/retail'
 import { get, remove } from '@/api/goodType'
 import { Operate } from '@/common/enum'
-import { GoodType } from '@/common/entity'
+// import { GoodType } from '@/common/entity'
 // obtain user infomation 
-const useTenantStore = tenantStore()
-const useRetailStore = retailStore()
+// const useTenantStore = tenantStore()
+// const useRetailStore = retailStore()
 
 // 表单格式
 let filter = ref("")
@@ -76,7 +79,12 @@ const currentDialogData = reactive<GoodType>({
   Comment: '',
 })
 const multipleTableRef = ref<InstanceType<typeof ElTable>>()
-const multipleSelection = ref<GoodType[]>([])
+const goodTypes = reactive<GoodType[]>([])
+const goodType = ref<GoodType>({} as GoodType)
+// 全部货物，非显示
+const goods = reactive<Goods[]>([])
+// 货物，显示用
+const selectGoods = reactive<Goods[]>([])
 
 // dialog表示flag
 let dialogFormVisible = ref(false)
@@ -103,47 +111,34 @@ const handleEdit = (index: number, target: GoodType) => {
   dialogFormVisible.value = true
 }
 
-const handleSelectionChange = (val: GoodType[]) => {
-  multipleSelection.value = val
-}
-
-const doSearch = () => {
-
-}
-
-const doDelete = (delete_id: any) => {
-  let query = delete_id
-  remove(query).then((res) => {
-    useRetailStore.customers.length = 0
-    res.data.forEach((customer: GoodType) => {
-      // useRetailStore.customers.push(customer)
-    })
-  }).finally(() => {
-    dialogVisible.value = false
-  })
-}
 
 const closeDialog = () => {
   dialogFormVisible.value = false
 }
-const doSubmit = (data: any) => {
-  useRetailStore.customers.length = 0
-  data.forEach((customer: GoodType) => {
-    // useRetailStore.customers.push(customer)
-  })
-  dialogFormVisible.value = false
-}
-// 复制转换成功的数值，并提示 复制成功 信息
-const copyNumber = (record: GoodType) => {
-  ElNotification({
-    title: '',
-    message: h('i', { style: 'color: teal' }, '复制成功'),
+
+// 选中 货物分类
+const onSelect = (select: GoodType) => {
+  selectGoods.length = 0
+  goods.filter(good => good.ID == select.ID).forEach(good => {
+    selectGoods.push(good)
   })
 }
+
 // 数据初始化前，页面不显示
 onMounted(async () => {
-
-});
+  get().then(resp => {
+    goodTypes.length = 0
+    resp.data.forEach((goodType: GoodType) => {
+      goodTypes.push(goodType)
+    })
+  })
+  get().then(resp => {
+    goodTypes.length = 0
+    resp.data.forEach((good: Goods) => {
+      goods.push(good)
+    })
+  })
+})
 </script>
 
 <style scoped>

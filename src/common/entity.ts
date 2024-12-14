@@ -67,12 +67,12 @@ type Door = {
 // 货品
 interface Goods {
   ID: string,
-  Phone: string,
   Name: string,
+  GoodTpye: string,
+  Brand: string,
+  Unit: string,
+  Price: number,
   Comment: string,
-  Amount: number,
-  Doors: Door[],
-  TotalArea: number
 }
 
 // 货品分类
@@ -82,6 +82,14 @@ interface GoodType {
   Comment: string
 }
 
+// 订单
+interface Order {
+  ID: string,
+  Name: string,
+  Comment: string
+}
 
 
-export { Tenant, Theme, DataTimeline, Event, Customer, Door, Filter, DoorSheet, GoodType }
+
+
+export { Tenant, Theme, DataTimeline, Event, Customer, Door, Filter, DoorSheet, GoodType, Goods, Order }

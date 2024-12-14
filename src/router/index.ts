@@ -29,20 +29,34 @@ const routes: Array<RouteRecordRaw> = [
           name: '柜门管理'
         }
       },
-      // {
-      //   path: '/goods',
-      //   component: () => import('@/view/goods/index.vue'),
-      //   meta: {
-      //     name: '货物管理'
-      //   }
-      // },
-      // {
-      //   path: '/goodtype',
-      //   component: () => import('@/view/goodtype/index.vue'),
-      //   meta: {
-      //     name: '分类管理'
-      //   }
-      // },
+      {
+        path: '/goods',
+        component: () => import('@/view/goods/index.vue'),
+        meta: {
+          name: '货物管理'
+        }
+      },
+      {
+        path: '/goodtype',
+        component: () => import('@/view/goodtype/index.vue'),
+        meta: {
+          name: '货物分类管理'
+        }
+      },
+      {
+        path: '/order',
+        component: () => import('@/view/goodtype/index.vue'),
+        meta: {
+          name: '下单'
+        }
+      },
+      {
+        path: '/orderManagement',
+        component: () => import('@/view/goodtype/index.vue'),
+        meta: {
+          name: '订单管理'
+        }
+      },
     ]
   },
   // {

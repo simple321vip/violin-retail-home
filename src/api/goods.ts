@@ -6,14 +6,10 @@ import Qs from 'qs'
  * @param params 
  * @returns 
  */
-const get = (params: Object) => {
+const get = () => {
   return service({
-    url: '/retail/api/v1/goodType',
+    url: '/retail/api/v1/goods',
     method: 'GET',
-    // params: params,
-    // paramsSerializer: (params) => {
-    //   return Qs.stringify(params, { arrayFormat: 'repeat' })
-    // },
   })
 }
 
@@ -24,24 +20,24 @@ const get = (params: Object) => {
  */
 const create = (data: Object) => {
   return service({
-    url: '/retail/api/v1/goodType',
+    url: '/retail/api/v1/goods',
     method: 'POST',
     data: data
   })
 }
 
 
-const update = (query: number, data: Object) => {
+const update = (ID: number, data: Object) => {
   return service({
-    url: '/retail/api/v1/goodType/' + query,
+    url: '/retail/api/v1/goods/' + ID,
     method: 'PUT',
     data: data
   })
 }
 
-const remove = (query: number) => {
+const remove = (ID: number) => {
   return service({
-    url: '/retail/api/v1/goodType/' + query,
+    url: '/retail/api/v1/goods/' + ID,
     method: 'DELETE',
   })
 }

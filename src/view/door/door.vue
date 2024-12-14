@@ -7,14 +7,14 @@
       <el-form-item label="柜门长度" :label-width="formLabelWidth">
         <el-input-number v-model="door.Length" :max=3000 :min=0 :value-on-clear=0 @change="calculateArea()">
           <template #suffix>
-            <span>cm</span>
+            <span>mm</span>
           </template>
         </el-input-number>
       </el-form-item>
       <el-form-item label="柜门宽度" :label-width="formLabelWidth">
         <el-input-number v-model="door.Width" :max=3000 :min=0 :value-on-clear=0 @change="calculateArea()">
           <template #suffix>
-            <span>cm</span>
+            <span>mm</span>
           </template>
         </el-input-number>
       </el-form-item>

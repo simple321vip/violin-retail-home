@@ -41,7 +41,7 @@ const concel = () => {
   emit('on-concel')
 }
 const submit = () => {
-  if (props.dialog_form.Name == "" || props.dialog_form.Name == undefined) {
+  if (props.dialog_form.Name == "") {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '请填写分类名称'),
@@ -65,8 +65,9 @@ const submit = () => {
     })
     return
   }
-  // 小分类
+
   let parent: GoodType
+  // 小分类
   if (props.dialog_form.Rank == 2) {
     parent = {
       ID: props.dialog_form.Parent.ID,
@@ -75,7 +76,7 @@ const submit = () => {
       Rank: props.dialog_form.Parent.Rank,
       children: Array()
     } as GoodType
-    props.dialog_form.Parent.children.forEach((item: any) => {
+    props.dialog_form.Parent.children.filter((item: any) => item.ID != props.dialog_form.ID).forEach((item: any) => {
       parent.children.push({
         ID: item.ID,
         Name: item.Name,
@@ -85,15 +86,11 @@ const submit = () => {
     })
 
     let child = {
+      ID: props.dialog_form.ID,
       Name: props.dialog_form.Name,
       Rank: props.dialog_form.Rank,
       Comment: props.dialog_form.Comment ? props.dialog_form.Comment : "",
     } as any
-    if (parent.children.length == 0) {
-      child.ID = 0
-    } else {
-      child.ID = Math.max(...parent.children.map(goodType => goodType.ID)) + 1
-    }
     parent.children.push(child)
     // 大分类
   } else {

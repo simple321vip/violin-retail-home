@@ -1,5 +1,4 @@
 import { service } from '../utils/request'
-import Qs from 'qs'
 
 /**
  * 
@@ -10,10 +9,6 @@ const get = () => {
   return service({
     url: '/retail/api/v1/goodType',
     method: 'GET',
-    // params: params,
-    // paramsSerializer: (params) => {
-    //   return Qs.stringify(params, { arrayFormat: 'repeat' })
-    // },
   })
 }
 
@@ -31,17 +26,17 @@ const create = (data: Object) => {
 }
 
 
-const update = (query: number, data: Object) => {
+const update = (ID: number, data: Object) => {
   return service({
-    url: '/retail/api/v1/goodType/' + query,
+    url: '/retail/api/v1/goodType/' + ID,
     method: 'PUT',
     data: data
   })
 }
 
-const remove = (query: number) => {
+const remove = (ID: number) => {
   return service({
-    url: '/retail/api/v1/goodType/' + query,
+    url: '/retail/api/v1/goodType/' + ID,
     method: 'DELETE',
   })
 }

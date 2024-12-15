@@ -77,9 +77,12 @@ interface Goods {
 
 // 货品分类
 interface GoodType {
-  ID: string,
+  ID: number,
+  Parent: GoodType | undefined
   Name: string,
-  Comment: string
+  Rank: number,
+  Comment: string,
+  children: GoodType[],
 }
 
 // 品牌

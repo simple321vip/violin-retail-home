@@ -66,10 +66,10 @@ type Door = {
 
 // 货品
 interface Goods {
-  ID: string,
+  ID: number,
   Name: string,
-  GoodTpye: string,
-  Brand: string,
+  GoodType: Array<number>,
+  Brand: number,
   Unit: string,
   Price: number,
   Comment: string,
@@ -87,7 +87,7 @@ interface GoodType {
 
 // 品牌
 interface Brand {
-  ID: string,
+  ID: number,
   Name: string,
   Comment: string
 }

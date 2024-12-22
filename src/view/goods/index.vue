@@ -19,8 +19,9 @@
       <el-table-column type="selection" width="30" />
       <el-table-column type="index" label="序号" width="60" />
       <el-table-column prop="Name" label="货品名称" width="100" />
-      <el-table-column prop="GoodType" label="货品分类" width="100" />
-      <el-table-column prop="Brand" label="品牌" width="100" />
+      <el-table-column prop="GoodType" label="大分类" width="100" :formatter="formatterBig" />
+      <el-table-column prop="GoodType" label="小分类" width="100" :formatter="formatterSmall" />
+      <el-table-column prop="Brand" label="品牌" width="100" :formatter="formatterBrand" />
       <el-table-column prop="Price" label="参考零售价" width="100" />
       <el-table-column prop="Unit" label="单位" width="60" />
       <el-table-column label="操作">
@@ -28,9 +29,9 @@
           <!-- <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
             <CopyDocument />
           </el-icon> -->
-          <el-button class="click-icon" size="small" @click="handleEdit(scope.$index, scope.row)">编辑
+          <el-button class="click-icon" size="small" @click="handleEdit(scope.row)">编辑
           </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -52,7 +53,7 @@ import { CopyDocument } from "@element-plus/icons-vue"
 import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElTag, ElFormItem, ElInput } from 'element-plus'
 import Dialog from './dialog.vue'
 import delete_dialog from '@/components/operate/deleteDialog.vue'
-import { GoodType, Goods } from '@/common/entity'
+import { GoodType, Goods, Brand } from '@/common/entity'
 import { retailStore } from '@/store/modules/retail'
 import { get, remove } from '@/api/goods'
 import { Operate } from '@/common/enum'
@@ -65,7 +66,7 @@ let filter = ref("")
 let operate = ref<Number>(0)
 
 // 响应式dialog数据
-const currentDialogData = reactive<Goods>({} as Goods)
+let currentDialogData = ref({} as any)
 
 // 全部货物，非显示
 const filterGoods = ref<Goods[]>([])
@@ -78,20 +79,20 @@ let dialogVisible = ref(false)
 // 操作-》添加
 const handleInsert = () => {
   operate.value = Operate.CREATE
-  currentDialogData.ID = ''
-  currentDialogData.Name = ''
-  currentDialogData.Comment = ''
+  Object.assign(currentDialogData.value = {}, {})
   dialogFormVisible.value = true
 }
 // 操作-》删除
-const handleDelete = (index: number, target: GoodType) => {
-  currentDialogData.ID = target.ID
+const handleDelete = (target: GoodType) => {
+  currentDialogData.value = target
   operate.value = Operate.DELETE;
   dialogVisible.value = true
+
 }
 // 操作-》编辑
-const handleEdit = (index: number, target: GoodType) => {
-  Object.assign(currentDialogData, target)
+const handleEdit = (target: Goods) => {
+  console.log(target)
+  Object.assign(currentDialogData.value, target)
   operate.value = Operate.UPDATE;
   dialogFormVisible.value = true
 }
@@ -103,7 +104,7 @@ const closeDialog = () => {
 
 // doSearch 执行检索
 const doSearch = () => {
-  filterGoods.value = useRetailStore.goods.filter(good => good.Name.includes(filter.value) || good.Brand.includes(filter.value))
+  filterGoods.value = useRetailStore.goods.filter(good => good.Name.includes(filter.value))
 }
 
 // doDelete 执行删除
@@ -121,13 +122,14 @@ const doDelete = async (delete_id: any) => {
 const doSubmit = async () => {
   useRetailStore.goods.length = 0
   await useRetailStore.getAllGoods()
+  closeDialog()
 }
 
 // submitCallback 新增，删除，更新后的Callback
 const submitCallback = async () => {
   await useRetailStore.getAllGoods()
   if (filter.value) {
-    filterGoods.value = useRetailStore.goods.filter(good => good.Name.includes(filter.value) || good.Brand.includes(filter.value))
+    filterGoods.value = useRetailStore.goods.filter(good => good.Name.includes(filter.value))
   } else {
     filterGoods.value = useRetailStore.goods
   }
@@ -135,15 +137,34 @@ const submitCallback = async () => {
   dialogVisible.value = false
 }
 
+const formatterBig = (row: Goods) => {
+  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
+  return bigGoodType.Name
+}
+
+const formatterSmall = (row: Goods) => {
+  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
+  let samllGoodType = bigGoodType.children.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
+  return samllGoodType.Name
+}
+
+const formatterBrand = (row: Brand) => {
+  let brand = useRetailStore.brands.find((brand) => brand.ID == row.ID) as Brand
+  return brand.Name
+}
+
 // 数据加载
 onMounted(async () => {
-  if (useRetailStore.goods.length == 0) {
-    await useRetailStore.getAllGoods()
-    filterGoods.value = useRetailStore.goods
-  }
   if (useRetailStore.goodTypes.length == 0) {
     await useRetailStore.getAllGoodTypes()
   }
+  if (useRetailStore.brands.length == 0) {
+    await useRetailStore.getAllBrands()
+  }
+  if (useRetailStore.goods.length == 0) {
+    await useRetailStore.getAllGoods()
+  }
+  filterGoods.value = useRetailStore.goods
 })
 </script>
 

@@ -44,7 +44,7 @@ const useRetailStore = retailStore()
 // 操作code
 let operate = ref<Number>(0)
 // 响应式dialog数据
-const currentDialogData = reactive<Brand>({} as Brand)
+let currentDialogData = ref({} as any)
 // dialog表示flag
 let dialogFormVisible = ref(false)
 let dialogVisible = ref(false)
@@ -52,14 +52,12 @@ let dialogVisible = ref(false)
 // 操作-》添加
 const handleInsert = () => {
   operate.value = Operate.CREATE
-  currentDialogData.ID = ''
-  currentDialogData.Name = ''
-  currentDialogData.Comment = ''
+  Object.assign(currentDialogData.value = {}, {})
   dialogFormVisible.value = true
 }
 // 操作-》删除
 const handleDelete = (target: Brand) => {
-  currentDialogData.ID = target.ID
+  currentDialogData.value = target
   operate.value = Operate.DELETE;
   dialogVisible.value = true
 }

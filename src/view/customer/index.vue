@@ -20,10 +20,24 @@
     <el-table ref="multipleTableRef" :data="filterSelection" style="width: 100%">
       <el-table-column type="selection" width="30" />
       <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="Name" label="名称" width="100" />
-      <el-table-column prop="Phone" label="电话号" width="180" />
-      <el-table-column prop="Comment" label="备注" width="60" />
-      <el-table-column label="操作">
+      <el-table-column prop="Name" label="客户名称" width="100" />
+      <el-table-column prop="Phone" label="客户电话号" width="150" />
+
+      <el-table-column label="新建订单" width="100">
+        <template #default="scope">
+          <el-icon :size="20" @click="goToOrder(scope.row)" class="click-icon">
+            <GoodsFilled />
+          </el-icon>
+        </template>
+      </el-table-column>
+      <el-table-column label="修改订单" width="100">
+        <template #default="scope">
+          <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
+            <Edit />
+          </el-icon>
+        </template>
+      </el-table-column>
+      <el-table-column label="客户信息操作" width="250">
         <template #default="scope">
           <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
             <CopyDocument />
@@ -34,6 +48,7 @@
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column prop="Comment" label="客户备注" width="100" />
     </el-table>
 
     <el-dialog width="30%" size="small" v-model="dialogFormVisible"
@@ -50,7 +65,7 @@
 
 <script setup lang="ts">
 import { reactive, ref, h, onMounted } from 'vue'
-import { CopyDocument } from "@element-plus/icons-vue"
+import { CopyDocument, GoodsFilled, Edit } from "@element-plus/icons-vue"
 import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElForm, ElRow, ElCol, ElFormItem, ElInput } from 'element-plus'
 import copy from 'copy-to-clipboard'
 import Dialog from './dialog.vue'
@@ -60,6 +75,7 @@ import { retailStore } from '@/store/modules/retail'
 import { get, remove } from '@/api/customer'
 import { Operate } from '@/common/enum'
 import { Customer } from '@/common/entity'
+import router from '@/router'
 // obtain user infomation 
 const useTenantStore = tenantStore()
 const useRetailStore = retailStore()
@@ -143,6 +159,14 @@ const copyNumber = (record: Customer) => {
   ElNotification({
     title: '',
     message: h('i', { style: 'color: teal' }, '复制成功'),
+  })
+}
+const goToOrder = (customer: any) => {
+  router.push({
+    path: 'order',
+    query: {
+      customer: JSON.stringify(customer),
+    },
   })
 }
 

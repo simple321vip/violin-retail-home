@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/order',
-        component: () => import('@/view/goodtype/index.vue'),
+        component: () => import('@/view/order/index.vue'),
         meta: {
           name: '下单'
         }

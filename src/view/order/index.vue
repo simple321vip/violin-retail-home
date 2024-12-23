@@ -1,20 +1,62 @@
 <template>
   <div class="master">
-    <!-- <el-form>
-      <el-row>
-        <el-col :span="6">
-          <el-form-item>
-            <el-input v-model="filter" placeholder="请输入" clearable />
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-button type="primary" @click="doSearch">检索</el-button>
-        </el-col>
-      </el-row>
-    </el-form> -->
-    <!-- <div class="create_dialog">
-      <el-button type="primary" @click="createDoorSheet" v-show="useTenantStore.tenant">新建柜门表单</el-button>
-    </div> -->
+    <el-tabs v-if="editableTabs.length > 1" v-model="editableTabsValue" type="card" class="demo-tabs">
+      <el-tab-pane v-if="editableTabs.length > 1" :key="editableTabs[0].Name" :label="editableTabs[0].Title"
+        :name="editableTabs[0].Name">
+        <el-table :data="currentOrder.OrderGoods" style="width: 100%">
+          <el-table-column type="selection" width="30" />
+          <el-table-column type="index" label="序号" width="60" />
+          <el-table-column prop="Name" label="货品名称" width="100" />
+          <el-table-column prop="BigGoodType" label="大分类" width="100" />
+          <el-table-column prop="SmallGoodType" label="小分类" width="100" />
+          <el-table-column prop="Brand" label="品牌" width="100" />
+          <el-table-column prop="Color" label="颜色" width="100" />
+          <el-table-column prop="Size" label="尺寸" width="100" />
+          <el-table-column prop="Unit" label="单位" width="60" />
+          <el-table-column prop="Price" label="售价" width="100">
+            <template #default="scope">
+              <el-input v-model="scope.row.Price" />
+            </template>
+          </el-table-column>
+          <el-table-column prop="Amount" label="数量" width="200">
+            <template #default="scope">
+              <el-input-number v-model="scope.row.Amount" :max=1000 :min=0 :value-on-clear=0 />
+            </template>
+          </el-table-column>
+          <el-table-column label="增加">
+            <template #default="scope">
+              <!-- <el-button type="primary" @click="handleInsert">加入购物车</el-button> -->
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane v-if="editableTabs.length > 1" :key="editableTabs[1].Name" :label="editableTabs[1].Title"
+        :name="editableTabs[1].Name">
+        <el-table :data="useRetailStore.goods" style="width: 100%">
+          <el-table-column type="selection" width="30" />
+          <el-table-column type="index" label="序号" width="60" />
+          <el-table-column prop="Name" label="货品名称" width="100" />
+          <el-table-column prop="GoodType" label="大分类" width="100" :formatter="formatterBig" />
+          <el-table-column prop="GoodType" label="小分类" width="100" :formatter="formatterSmall" />
+          <el-table-column prop="Brand" label="品牌" width="100" :formatter="formatterBrand" />
+          <!-- <el-table-column prop="Amount" label="数量" width="200">
+            <el-input-number v-model="order.ID" :max=1000 :min=0 :value-on-clear=0 />
+          </el-table-column> -->
+          <el-table-column prop="Unit" label="单位" width="60" />
+          <el-table-column prop="Price" label="售价" width="100">
+            <template #default="scope">
+              <el-input v-model="scope.row.Price" />
+            </template>
+          </el-table-column>
+          <el-table-column label="增加">
+            <template #default="scope">
+              <el-button type="primary" @click="handleInsert(scope.row)">加入购物车</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
+
     <div class="tag_list">
       <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
         <el-radio-button :label="item.Name" v-for="(item) in goodTypes" :value="item.ID" />
@@ -22,49 +64,28 @@
       <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
         @click="onSelect(item)">{{ item.Name }}</el-tag> -->
     </div>
-    <!-- <el-table :data="useRetailStore.customers" @selection-change="handleSelectionChange" style="width: 100%">
-      <el-table-column type="selection" width="30" />
-      <el-table-column type="index" label="序号" width="60" />
-      <el-table-column prop="Name" label="货品名称" width="100" />
-      <el-table-column prop="Comment" label="备注" width="60" />
-      <el-table-column label="操作">
-        <template #default="scope">
-          <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
-            <CopyDocument />
-          </el-icon>
-          <el-button class="click-icon" size="small" @click="handleEdit(scope.$index, scope.row)"
-            v-show="useTenantStore.tenant">编辑
-          </el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)"
-            v-show="useTenantStore.tenant">删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table> -->
 
-    <!-- <el-dialog width="30%" size="small" v-model="dialogFormVisible" :title="operate == Operate.UPDATE ? '分类更新' : '新建分类'">
-      <Dialog :dialog_form="currentDialogData" :operate_code="operate" @on-concel="closeDialog" @on-submit="doSubmit" />
-    </el-dialog>
-
-    <el-dialog width="20%" size="small" v-model="dialogVisible" title="确认删除么？">
-      <delete_dialog :delete_id="currentDialogData.ID" @on-submit="doDelete"></delete_dialog>
-    </el-dialog> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, h, onMounted } from 'vue'
-import { CopyDocument } from "@element-plus/icons-vue"
-import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElTag, ElRadioGroup, ElRadioButton, ElFormItem, ElInput } from 'element-plus'
-import Dialog from './dialog.vue'
-import { GoodType, Goods, Order } from '@/common/entity'
-// import { retailStore } from '@/store/modules/retail'
+import { Plus } from "@element-plus/icons-vue"
+import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElTabs, ElTag } from 'element-plus'
+import { ElRadioGroup, ElRadioButton, ElFormItem, ElInputNumber, ElTabPane, ElInput } from 'element-plus'
+// import Dialog from './dialog.vue'
+import { GoodType, Goods, OrderGoods, Order, Tab } from '@/common/entity'
+import { retailStore } from '@/store/modules/retail'
 import { get, remove } from '@/api/goodType'
 import { Operate } from '@/common/enum'
+import { useRoute } from 'vue-router'
+import { settingsStore } from "@/store/modules/settings"
+import { formatterBig, formatterSmall, formatterBrand } from '@/service/formatter'
+const useSettingsStore = settingsStore()
+const route = useRoute()
 // import { GoodType } from '@/common/entity'
-// obtain user infomation 
-// const useTenantStore = tenantStore()
-// const useRetailStore = retailStore()
+
+const useRetailStore = retailStore()
 
 // 表单格式
 let filter = ref("")
@@ -73,34 +94,58 @@ let filter = ref("")
 let operate = ref<Number>(0)
 
 // 响应式dialog数据
-const currentDialogData = reactive<GoodType>({
-  ID: "",
-  Name: '',
-  Comment: '',
-})
-const multipleTableRef = ref<InstanceType<typeof ElTable>>()
+let currentDialogData = ref({})
 const goodTypes = reactive<GoodType[]>([])
 const goodType = ref<GoodType>({} as GoodType)
 // 全部货物，非显示
 const goods = reactive<Goods[]>([])
 // 货物，显示用
 const selectGoods = reactive<Goods[]>([])
+const item = ref<any>(null);
+const currentOrder = ref<Order>({} as Order);
 
 // dialog表示flag
 let dialogFormVisible = ref(false)
 let dialogVisible = ref(false)
+const editableTabsValue = ref('2')
 
+const editableTabs = ref<Tab[]>([])
+const removeTab = (targetName: string) => {
+  const tabs = editableTabs.value
+  let activeName = editableTabsValue.value
+  if (activeName === targetName) {
+    tabs.forEach((tab, index) => {
+      if (tab.Name === targetName) {
+        const nextTab = tabs[index + 1] || tabs[index - 1]
+        if (nextTab) {
+          activeName = nextTab.Name
+        }
+      }
+    })
+  }
+
+  editableTabsValue.value = activeName
+  editableTabs.value = tabs.filter((tab) => tab.Name !== targetName)
+}
 // 操作-》添加
-const handleInsert = () => {
-  operate.value = Operate.CREATE
-  currentDialogData.ID = ''
-  currentDialogData.Name = ''
-  currentDialogData.Comment = ''
-  dialogFormVisible.value = true
+const handleInsert = (target: Goods) => {
+  console.log(target)
+  console.log(currentOrder.value.OrderGoods)
+  if (currentOrder.value.OrderGoods) {
+    // TODO how to judge plus or modify
+    currentOrder.value.OrderGoods.push({
+      ID: 1,
+    } as OrderGoods)
+  } else {
+    currentOrder.value.OrderGoods = []
+    currentOrder.value.OrderGoods.push({
+      ID: 1,
+    } as OrderGoods)
+  }
 }
 // 操作-》删除
 const handleDelete = (index: number, target: GoodType) => {
-  currentDialogData.ID = target.ID
+  currentDialogData.value = target
   operate.value = Operate.DELETE;
   dialogVisible.value = true
 }
@@ -123,21 +168,44 @@ const onSelect = (select: GoodType) => {
     selectGoods.push(good)
   })
 }
+const doSearch = () => { }
+const doSubmit = () => { }
+const addToBag = (goods: Goods) => { }
 
 // 数据初始化前，页面不显示
+// 1.1 从客户处，新建订单时，如果localStorage内有订单信息，此订单属于同一个人，则不重新创建订单
+// 1.2 如果localStorage内有订单信息，但是不是同一个客户的时候，将localStorage内客户存储到order内，然后创建新的订单。
+// 1.3 如果localStorage内没有订单信息，则创建新的订单。
+// 
+// 2.1 从【订单管理】编辑订单时，如果localStorage内有相同订单信息
+// 2.2 如果localStorage内有不同订单信息，则保存该订单
+// 2.3 如果localStorage内没有订单信息，则编辑该订单。
 onMounted(async () => {
-  get().then(resp => {
-    goodTypes.length = 0
-    resp.data.forEach((goodType: GoodType) => {
-      goodTypes.push(goodType)
-    })
-  })
-  get().then(resp => {
-    goodTypes.length = 0
-    resp.data.forEach((good: Goods) => {
-      goods.push(good)
-    })
-  })
+  console.log(11111111111111111)
+  useSettingsStore.activePath = "/order"
+
+  let currentOrder = window.localStorage.getItem("currentOrder")
+  if (currentOrder != null) {
+
+  }
+  if (route.query.customer == undefined) {
+    return
+  }
+  //这里反序列化获取参数
+  item.value = JSON.parse(route.query.customer as string)
+  editableTabs.value =
+    [
+      {
+        Title: item.value.Name + '_购物车',
+        Name: item.value.Phone + '2',
+        Content: 'Tab 2 content',
+      } as Tab,
+      {
+        Title: item.value.Name + '_新建订单',
+        Name: item.value.Phone + '1',
+        Content: 'Tab 1 content',
+      } as Tab,
+    ]
 })
 </script>
 
@@ -157,4 +225,4 @@ onMounted(async () => {
 .create_dialog {
   margin: 10px;
 }
-</style>@/store/modules/retail@/api/goodType
+</style>

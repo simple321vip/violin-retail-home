@@ -69,12 +69,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import $moment from "moment"
 import { useRouter } from 'vue-router'
 import { useWeatherInfo } from '@/service/weather'
 import { get_profileName, create_profile, judge_profile } from "@/api/profile"
 import { settingsStore } from "@/store/modules/settings"
+import { retailStore } from '@/store/modules/retail'
+const useRetailStore = retailStore()
 
 // -- IMPORT --
 const weatherInfo = useWeatherInfo()
@@ -230,6 +232,18 @@ setInterval(() => {
 //   }
 // })
 
+// 数据加载
+onMounted(async () => {
+  if (useRetailStore.goodTypes.length == 0) {
+    await useRetailStore.getAllGoodTypes()
+  }
+  if (useRetailStore.brands.length == 0) {
+    await useRetailStore.getAllBrands()
+  }
+  if (useRetailStore.goods.length == 0) {
+    await useRetailStore.getAllGoods()
+  }
+})
 </script>
 
 <style lang="scss" scoped>

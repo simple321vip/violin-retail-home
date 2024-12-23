@@ -8,8 +8,6 @@ const whiteList = ['/login', '/register', '/sorryPage', '/BlogViewer']
 let url = window.location.href
 
 router.beforeEach((to, from, next) => {
-  console.log(to.path)
-
   const token = getToken()
 
   if (typeof token === 'string') {

@@ -1,14 +1,11 @@
 <template>
   <div class="dashboard">
     <el-form :model="dialog_form">
-      <!-- <el-form-item v-show="props.operate_code == Operate.UPDATE" label="ID" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.ID" :disabled="true" />
-      </el-form-item> -->
-      <el-form-item label="分类名" :label-width="formLabelWidth">
+      <el-form-item label="客户名" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Name" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="单位" :label-width="formLabelWidth">
-        <el-input v-model="dialog_form.Unit" autocomplete="off" />
+      <el-form-item label="客户电话" :label-width="formLabelWidth">
+        <el-input v-model="dialog_form.Phone" autocomplete="off" />
       </el-form-item>
       <el-form-item label="备注" :label-width="formLabelWidth">
         <el-input v-model="dialog_form.Comment" autocomplete="off" />
@@ -52,7 +49,7 @@ const submit = () => {
   if (data.Name == "") {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
-        h('span', null, '请填写分类名称'),
+        h('span', null, '客户名'),
       ]),
       type: 'error'
     })

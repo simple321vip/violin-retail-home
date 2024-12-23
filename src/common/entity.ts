@@ -12,6 +12,13 @@ type Theme = {
   hoverText: string,
 }
 
+// Tab
+interface Tab {
+  Title: string,
+  Name: string,
+  Content: string
+}
+
 type DataTimeline = {
   from: string,
   title: string,
@@ -92,15 +99,33 @@ interface Brand {
   Comment: string
 }
 
+// 货品
+interface OrderGoods {
+  ID: number,
+  Name: string,
+  BigGoodType: string,
+  SmallGoodType: string,
+  Color: string,
+  Size: string,
+  Brand: string,
+  Unit: string,
+  Amount: number,
+  Price: number,
+  TotalPrice: number,
+  Comment: string,
+}
+
 // 订单
 interface Order {
-  ID: string,
+  ID: number,
   Name: string,
-  Comment: string
+  OrderGoods: Array<OrderGoods>,
+  AccountsReceivable: number,
+  ActualAccountsReceivable: number,
+  Comment: string,
 }
 
 
 
-
-export { Tenant, Theme, DataTimeline, Event, }
+export { Tenant, Theme, DataTimeline, Event, Tab, OrderGoods }
 export { Customer, Door, Filter, DoorSheet, GoodType, Goods, Order, Brand }

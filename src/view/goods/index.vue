@@ -57,6 +57,7 @@ import { GoodType, Goods, Brand } from '@/common/entity'
 import { retailStore } from '@/store/modules/retail'
 import { get, remove } from '@/api/goods'
 import { Operate } from '@/common/enum'
+import { formatterBig, formatterSmall, formatterBrand } from '@/service/formatter'
 const useRetailStore = retailStore()
 
 // 表单格式
@@ -137,22 +138,6 @@ const submitCallback = async () => {
   dialogVisible.value = false
 }
 
-const formatterBig = (row: Goods) => {
-  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
-  return bigGoodType.Name
-}
-
-const formatterSmall = (row: Goods) => {
-  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
-  let samllGoodType = bigGoodType.children.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
-  return samllGoodType.Name
-}
-
-const formatterBrand = (row: Brand) => {
-  let brand = useRetailStore.brands.find((brand) => brand.ID == row.ID) as Brand
-  return brand.Name
-}
-
 // 数据加载
 onMounted(async () => {
   if (useRetailStore.goodTypes.length == 0) {
@@ -184,4 +169,4 @@ onMounted(async () => {
 .create_dialog {
   margin: 10px;
 }
-</style>@/store/modules/retail@/api/goodType
+</style>

@@ -157,4 +157,4 @@ onMounted(async () => {
 .create_dialog {
   margin: 10px;
 }
-</style>@/store/modules/retail@/api/goodType
+</style>

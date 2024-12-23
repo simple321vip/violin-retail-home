@@ -17,6 +17,8 @@ export const settingsStore = defineStore('settings', () => {
   const isLoading = computed(() => settings.value.isLoading)
   const profileName = computed(() => settings.value.profileName)
 
+  const activePath = ref<string>("/home")
+
   return {
     settings,
     sideMode,
@@ -24,6 +26,7 @@ export const settingsStore = defineStore('settings', () => {
     isRouterAlive,
     isLoading,
     profileName,
+    activePath
   }
 })
 

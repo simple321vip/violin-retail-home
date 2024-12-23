@@ -1,9 +1,9 @@
 <template>
   <div>
     <el-menu router class="el-menu-vertical" :style="{ height: sideHeight }" :background-color="theme.background"
-      :active-text-color="theme?.background">
+      :active-text-color="theme?.background" :default-active="useSettingsStore.activePath">
       <el-menu-item v-for="(route, index) in current_routes" :key="index" :index="route.path" :title="route.meta?.name"
-        @click="onclick()">
+        @click="onclick(route.path)">
         <template #title>
           <div class="gva-menu-item">
             <el-icon v-if="index == 0" :size="20">
@@ -19,13 +19,16 @@
               <Notebook />
             </el-icon>
             <el-icon v-if="index == 4" :size="20">
-              <Calendar />
+              <Goods />
             </el-icon>
             <el-icon v-if="index == 5" :size="20">
               <MostlyCloudy />
             </el-icon>
-            <el-icon v-if="index == 10" :size="20">
+            <el-icon v-if="index == 6" :size="20">
               <Setting />
+            </el-icon>
+            <el-icon v-if="index == 7" :size="20">
+              <Sell />
             </el-icon>
             <span>{{ route.meta?.name }}</span>
           </div>
@@ -36,10 +39,10 @@
 </template>
 
 <script setup lang='ts'>
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import router from "@/router/index"
 import { settingsStore } from "@/store/modules/settings"
-import { Theme } from "@/entity/index";
+import { Theme } from "@/common/entity"
 
 // -- IMPORT --
 const useSettingsStore = settingsStore()
@@ -60,9 +63,14 @@ const theme = ref<Theme>({
 })
 
 // -- EVENT DEFINITION
-const onclick = () => {
+const onclick = (path: string) => {
   activeBackground.value = '#4D70FF'
+  // useSettingsStore.activePath = path
 }
+
+// watch(useSettingsStore.activeIndex, (newIndex, oldIndex) => {
+
+// })
 
 const getTheme = () => {
   switch (useSettingsStore.sideMode) {
@@ -101,7 +109,7 @@ onBeforeMount(() => {
   sideHeight.value = window.innerHeight + 'px'
 })
 const activeBackground = ref(theme.value.activeBackground)
-onclick()
+// onclick()
 
 
 </script>

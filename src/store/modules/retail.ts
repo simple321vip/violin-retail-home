@@ -49,9 +49,11 @@ export const retailStore = defineStore('customers', () => {
           goodTypes.push(item)
         })
         goodTypes.forEach(goodType => {
-          goodType.children.forEach(sub => {
-            sub.Parent = goodType
-          })
+          if (goodType.children) {
+            goodType.children.forEach(sub => {
+              sub.Parent = goodType
+            })
+          }
         })
       }
     })

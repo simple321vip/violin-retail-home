@@ -243,6 +243,7 @@ onMounted(async () => {
   if (useRetailStore.goods.length == 0) {
     await useRetailStore.getAllGoods()
   }
+  console.log(useRetailStore.goodTypes)
 })
 </script>
 

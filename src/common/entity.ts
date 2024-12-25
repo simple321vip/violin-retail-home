@@ -75,7 +75,8 @@ type Door = {
 interface Goods {
   ID: number,
   Name: string,
-  GoodType: Array<number>,
+  BigGoodType: number,
+  SmallGoodType: number | undefined,
   Brand: number,
   Unit: string,
   Price: number,

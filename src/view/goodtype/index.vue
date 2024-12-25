@@ -155,6 +155,7 @@ const submitCallback = (data: any) => {
   data.forEach((item: GoodType) => {
     useRetailStore.goodTypes.push(item)
   })
+  console.log(useRetailStore.goodTypes)
   useRetailStore.goodTypes.forEach(goodType => {
     goodType.children.forEach(sub => {
       sub.Parent = goodType

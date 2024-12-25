@@ -73,7 +73,7 @@ const submit = () => {
       Name: props.dialog_form.Parent.Name,
       Comment: props.dialog_form.Parent.Comment,
       Rank: props.dialog_form.Parent.Rank,
-      children: Array()
+      children: Array(0)
     } as GoodType
     props.dialog_form.Parent.children.forEach((item: any) => {
       parent.children.push({
@@ -102,7 +102,7 @@ const submit = () => {
       Name: props.dialog_form.Name,
       Comment: props.dialog_form.Comment,
       Rank: props.dialog_form.Rank,
-      children: Array()
+      children: Array(0)
     } as GoodType
     props.dialog_form.children.forEach((item: any) => {
       parent.children.push({
@@ -114,7 +114,6 @@ const submit = () => {
     })
   }
   if (props.operate_code == Operate.UPDATE) {
-    console.log(parent)
     update(parent.ID, parent).then((res) => {
       emit('on-submit', res.data)
     })

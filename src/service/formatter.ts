@@ -3,13 +3,13 @@ import { retailStore } from '@/store/modules/retail'
 const useRetailStore = retailStore()
 
 export const formatterBig = (row: Goods) => {
-  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
+  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.BigGoodType) as GoodType
   return bigGoodType.Name
 }
 
 export const formatterSmall = (row: Goods) => {
-  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
-  let samllGoodType = bigGoodType.children.find((goodType) => goodType.ID == row.GoodType[0]) as GoodType
+  let bigGoodType = useRetailStore.goodTypes.find((goodType) => goodType.ID == row.BigGoodType) as GoodType
+  let samllGoodType = bigGoodType.children.find((goodType) => goodType.ID == row.SmallGoodType) as GoodType
   return samllGoodType.Name
 }
 

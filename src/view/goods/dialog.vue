@@ -111,15 +111,12 @@ const submit = () => {
 
   let goodType = []
   goodType.push({
-    ID: props.dialog_form.bigGoodType.ID,
-    Name: props.dialog_form.bigGoodType.Name,
-    Rank: props.dialog_form.bigGoodType.Rank,
+    ID: props.dialog_form.bigGoodType.ID
+
   })
   if (props.dialog_form.smallGoodType != undefined) {
     goodType.push({
-      ID: props.dialog_form.smallGoodType.ID,
-      Name: props.dialog_form.smallGoodType.Name,
-      Rank: props.dialog_form.smallGoodType.Rank,
+      ID: props.dialog_form.smallGoodType.ID
     })
   }
 
@@ -127,7 +124,8 @@ const submit = () => {
     ID: props.dialog_form.ID,
     Name: props.dialog_form.Name,
     Price: Number(props.dialog_form.Price),
-    GoodType: goodType,
+    BigGoodType: props.dialog_form.bigGoodType.ID,
+    SmallGoodType: props.dialog_form.smallGoodType.ID,
     Brand: {
       ID: props.dialog_form.Brand.ID,
       Name: props.dialog_form.Brand.Name
@@ -150,6 +148,7 @@ const OnSelect = (value: any) => {
   let goodType = useRetailStore.goodTypes.find(goodType => goodType.ID == value.ID)
   smallGoodType.length = 0
   if (goodType) {
+    console.log(goodType)
     goodType.children.forEach(item => {
       smallGoodType.push(item)
     })

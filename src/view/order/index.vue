@@ -32,6 +32,27 @@
       </el-tab-pane>
       <el-tab-pane v-if="editableTabs.length > 1" :key="editableTabs[1].Name" :label="editableTabs[1].Title"
         :name="editableTabs[1].Name">
+        <div class="tag_list">
+          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+            <el-radio-button :label="item.Name" v-for="(item) in useRetailStore.goodTypes" :value="item.ID" />
+          </el-radio-group>
+          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
+        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
+        </div>
+        <div class="tag_list">
+          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+            <el-radio-button :label="item.Name" v-for="(item) in subGoodsType" :value="item.ID" />
+          </el-radio-group>
+          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
+        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
+        </div>
+        <div class="tag_list">
+          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+            <el-radio-button :label="item.Name" v-for="(item) in useRetailStore.brands" :value="item.ID" />
+          </el-radio-group>
+          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
+        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
+        </div>
         <el-table :data="useRetailStore.goods" style="width: 100%">
           <el-table-column type="selection" width="30" />
           <el-table-column type="index" label="序号" width="60" />
@@ -56,15 +77,6 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
-
-    <div class="tag_list">
-      <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
-        <el-radio-button :label="item.Name" v-for="(item) in goodTypes" :value="item.ID" />
-      </el-radio-group>
-      <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
-        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
-    </div>
-
   </div>
 </template>
 
@@ -95,7 +107,7 @@ let operate = ref<Number>(0)
 
 // 响应式dialog数据
 let currentDialogData = ref({})
-const goodTypes = reactive<GoodType[]>([])
+const subGoodsType = reactive<GoodType[]>([])
 const goodType = ref<GoodType>({} as GoodType)
 // 全部货物，非显示
 const goods = reactive<Goods[]>([])
@@ -156,16 +168,11 @@ const handleEdit = (index: number, target: GoodType) => {
   dialogFormVisible.value = true
 }
 
-
-const closeDialog = () => {
-  dialogFormVisible.value = false
-}
-
-// 选中 货物分类
+// 选中 货物大分类
 const onSelect = (select: GoodType) => {
-  selectGoods.length = 0
-  goods.filter(good => good.ID == select.ID).forEach(good => {
-    selectGoods.push(good)
+  subGoodsType.length = 0
+  select.children.forEach(goodsType => {
+    subGoodsType.push(goodsType)
   })
 }
 const doSearch = () => { }
@@ -181,7 +188,6 @@ const addToBag = (goods: Goods) => { }
 // 2.2 如果localStorage内有不同订单信息，则保存该订单
 // 2.3 如果localStorage内没有订单信息，则编辑该订单。
 onMounted(async () => {
-  console.log(11111111111111111)
   useSettingsStore.activePath = "/order"
 
   let currentOrder = window.localStorage.getItem("currentOrder")

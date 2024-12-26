@@ -5,17 +5,17 @@
         <el-input v-model="dialog_form.Name" autocomplete="off" />
       </el-form-item>
       <el-form-item label="大分类" :label-width="formLabelWidth">
-        <el-select v-model="dialog_form.bigGoodType" value-key="ID" placeholder="Select" size="large" @change="OnSelect">
+        <el-select v-model="BigGoodType" value-key="ID" placeholder="Select" size="large" @change="OnSelect">
           <el-option v-for="item in useRetailStore.goodTypes" :key="item.ID" :label="item.Name" :value="item" />
         </el-select>
       </el-form-item>
       <el-form-item label="小分类" :label-width="formLabelWidth">
-        <el-select v-model="dialog_form.smallGoodType" value-key="ID" placeholder="Select" size="large">
-          <el-option v-for="item in smallGoodType" :key="item.ID" :label="item.Name" :value="item" />
+        <el-select v-model="SmallGoodType" value-key="ID" placeholder="Select" size="large">
+          <el-option v-for="item in smallGoodTypes" :key="item.ID" :label="item.Name" :value="item" />
         </el-select>
       </el-form-item>
       <el-form-item label="品牌" :label-width="formLabelWidth">
-        <el-select v-model="dialog_form.Brand" placeholder="Select" value-key="ID" size="large">
+        <el-select v-model="selectBrand" placeholder="Select" value-key="ID" size="large">
           <el-option v-for="item in useRetailStore.brands" :key="item.ID" :label="item.Name" :value="item" />
         </el-select>
       </el-form-item>
@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import { h, reactive } from 'vue'
+import { h, reactive, ref } from 'vue'
 import { ElMessage, ElSelect, ElOption } from 'element-plus'
 import { ElButton, ElForm, ElFormItem, ElInput } from 'element-plus'
 import { update, create } from '@/api/goods'
 import { Operate } from '@/common/enum'
 import { retailStore } from '@/store/modules/retail'
-import { GoodType } from '@/common/entity'
+import { Brand, GoodType } from '@/common/entity'
 const useRetailStore = retailStore()
 
 const formLabelWidth = '80px'
@@ -57,8 +57,26 @@ type Props = {
   operate_code: Number
 }
 const props = defineProps<Props>()
+// 大分类选中值
+let BigGoodType = ref<GoodType>()
+// 小分类选中值
+let SmallGoodType = ref<GoodType>()
+// 品牌选中值
+let selectBrand = ref<Brand>()
+// 小分类下拉列表
+const smallGoodTypes = reactive<GoodType[]>([])
+if (props.operate_code == Operate.UPDATE) {
+  BigGoodType.value = useRetailStore.goodTypes.find(goodType => goodType.ID == props.dialog_form.BigGoodType)
+  if (props.dialog_form.SmallGoodType != undefined) {
+    smallGoodTypes.length = 0
+    BigGoodType.value?.children.forEach(child => smallGoodTypes.push(child))
+    SmallGoodType.value = BigGoodType.value?.children.find(goodType => goodType.ID == props.dialog_form.SmallGoodType)
+  }
+  if (props.dialog_form.Brand != undefined) {
+    selectBrand.value = useRetailStore.brands.find(brand => brand.ID == props.dialog_form.Brand)
+  }
+}
 
-const smallGoodType = reactive<GoodType[]>([])
 const options = [
   "个", "袋", "张", "盒", "箱", "捆",
 ]
@@ -79,7 +97,7 @@ const submit = () => {
     return
   }
 
-  if (props.dialog_form.bigGoodType == undefined) {
+  if (BigGoodType.value == undefined) {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '请选择大分类'),
@@ -89,7 +107,7 @@ const submit = () => {
     return
   }
 
-  if (props.dialog_form.Brand == undefined) {
+  if (selectBrand.value == undefined) {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [
         h('span', null, '请选择品牌'),
@@ -109,27 +127,13 @@ const submit = () => {
     return
   }
 
-  let goodType = []
-  goodType.push({
-    ID: props.dialog_form.bigGoodType.ID
-
-  })
-  if (props.dialog_form.smallGoodType != undefined) {
-    goodType.push({
-      ID: props.dialog_form.smallGoodType.ID
-    })
-  }
-
   const data = {
     ID: props.dialog_form.ID,
     Name: props.dialog_form.Name,
     Price: Number(props.dialog_form.Price),
-    BigGoodType: props.dialog_form.bigGoodType.ID,
-    SmallGoodType: props.dialog_form.smallGoodType.ID,
-    Brand: {
-      ID: props.dialog_form.Brand.ID,
-      Name: props.dialog_form.Brand.Name
-    },
+    BigGoodType: BigGoodType.value.ID,
+    SmallGoodType: SmallGoodType.value?.ID,
+    Brand: selectBrand.value.ID,
     Unit: props.dialog_form.Unit,
     Comment: props.dialog_form.Comment,
   }
@@ -146,11 +150,10 @@ const submit = () => {
 
 const OnSelect = (value: any) => {
   let goodType = useRetailStore.goodTypes.find(goodType => goodType.ID == value.ID)
-  smallGoodType.length = 0
+  smallGoodTypes.length = 0
   if (goodType) {
-    console.log(goodType)
     goodType.children.forEach(item => {
-      smallGoodType.push(item)
+      smallGoodTypes.push(item)
     })
   }
 }

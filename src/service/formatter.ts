@@ -13,7 +13,7 @@ export const formatterSmall = (row: Goods) => {
   return samllGoodType.Name
 }
 
-export const formatterBrand = (row: Brand) => {
-  let brand = useRetailStore.brands.find((brand) => brand.ID == row.ID) as Brand
+export const formatterBrand = (row: Goods) => {
+  let brand = useRetailStore.brands.find((brand) => brand.ID == row.Brand) as Brand
   return brand.Name
 }

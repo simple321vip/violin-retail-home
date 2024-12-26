@@ -26,9 +26,6 @@
       <el-table-column prop="Unit" label="单位" width="60" />
       <el-table-column label="操作">
         <template #default="scope">
-          <!-- <el-icon :size="20" @click="copyNumber(scope.row)" class="click-icon">
-            <CopyDocument />
-          </el-icon> -->
           <el-button class="click-icon" size="small" @click="handleEdit(scope.row)">编辑
           </el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除
@@ -48,14 +45,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, h, onMounted } from 'vue'
-import { CopyDocument } from "@element-plus/icons-vue"
-import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElIcon, ElTag, ElFormItem, ElInput } from 'element-plus'
+import { ref, onMounted } from 'vue'
+import { ElButton, ElTable, ElDialog, ElTableColumn, ElFormItem, ElInput } from 'element-plus'
 import Dialog from './dialog.vue'
 import delete_dialog from '@/components/operate/deleteDialog.vue'
 import { GoodType, Goods, Brand } from '@/common/entity'
 import { retailStore } from '@/store/modules/retail'
-import { get, remove } from '@/api/goods'
+import { remove } from '@/api/goods'
 import { Operate } from '@/common/enum'
 import { formatterBig, formatterSmall, formatterBrand } from '@/service/formatter'
 const useRetailStore = retailStore()
@@ -71,7 +67,6 @@ let currentDialogData = ref({} as any)
 
 // 全部货物，非显示
 const filterGoods = ref<Goods[]>([])
-
 
 // dialog表示flag
 let dialogFormVisible = ref(false)
@@ -92,7 +87,6 @@ const handleDelete = (target: GoodType) => {
 }
 // 操作-》编辑
 const handleEdit = (target: Goods) => {
-  console.log(target)
   Object.assign(currentDialogData.value, target)
   operate.value = Operate.UPDATE;
   dialogFormVisible.value = true

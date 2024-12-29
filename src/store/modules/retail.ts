@@ -1,10 +1,10 @@
 import { acceptHMRUpdate, defineStore } from "pinia"
-import { reactive } from "vue"
+import { reactive, ref } from "vue"
 import { get } from '@/api/customer'
 import { get as getGoods } from '@/api/goods'
 import { get as getGoodType } from '@/api/goodType'
 import { get as getBrands } from '@/api/brand'
-import { Customer, Goods, GoodType, Brand } from "@/common/entity"
+import { Customer, Goods, GoodType, Brand, Order } from "@/common/entity"
 
 export const retailStore = defineStore('customers', () => {
 
@@ -12,6 +12,7 @@ export const retailStore = defineStore('customers', () => {
   const goods = reactive<Goods[]>([])
   const goodTypes = reactive<GoodType[]>([])
   const brands = reactive<Brand[]>([])
+  const currentOrder = reactive<Order>({} as Order);
 
   const getAllCustomers = async () => {
     customers.length = 0
@@ -78,7 +79,8 @@ export const retailStore = defineStore('customers', () => {
     goodTypes,
     getAllGoodTypes,
     brands,
-    getAllBrands
+    getAllBrands,
+    currentOrder
   }
 })
 

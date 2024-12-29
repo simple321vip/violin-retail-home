@@ -70,7 +70,6 @@ const submit = () => {
     })
     return
   }
-
   if (!isPhoneNumber(data.Phone)) {
     ElMessage({
       message: h('p', { style: 'line-height: 1; font-size: 14px' }, [

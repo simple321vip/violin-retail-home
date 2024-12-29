@@ -3,7 +3,7 @@
     <el-tabs v-if="editableTabs.length > 1" v-model="editableTabsValue" type="card" class="demo-tabs">
       <el-tab-pane v-if="editableTabs.length > 1" :key="editableTabs[0].Name" :label="editableTabs[0].Title"
         :name="editableTabs[0].Name">
-        <el-table :data="currentOrder.OrderGoods" style="width: 100%">
+        <el-table :data="useRetailStore.currentOrder.OrderGoods" style="width: 100%">
           <el-table-column type="selection" width="30" />
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="Name" label="货品名称" width="100" />
@@ -32,28 +32,29 @@
       </el-tab-pane>
       <el-tab-pane v-if="editableTabs.length > 1" :key="editableTabs[1].Name" :label="editableTabs[1].Title"
         :name="editableTabs[1].Name">
+
         <div class="tag_list">
-          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+          <el-text size="large">大分类：</el-text>
+          <el-radio-group v-model="bigGoodType.ID" size="large" @change="onSelect('BigGoodType')">
             <el-radio-button :label="item.Name" v-for="(item) in useRetailStore.goodTypes" :value="item.ID" />
           </el-radio-group>
-          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
-        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
         </div>
+        <el-divider />
         <div class="tag_list">
-          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+          <el-text size="large">小分类：</el-text>
+          <el-radio-group v-model="smallGoodType.ID" size="large" @change="onSelect('BigGoodType')">
             <el-radio-button :label="item.Name" v-for="(item) in subGoodsType" :value="item.ID" />
           </el-radio-group>
-          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
-        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
         </div>
+        <el-divider />
         <div class="tag_list">
-          <el-radio-group v-model="goodType.ID" size="large" @change="onSelect(goodType)">
+          <el-text size="large">品&emsp;牌：</el-text>
+          <el-radio-group v-model="selectBrand.ID" size="large" @change="onSelect('Brand')">
             <el-radio-button :label="item.Name" v-for="(item) in useRetailStore.brands" :value="item.ID" />
           </el-radio-group>
-          <!-- <el-tag class="ml-2 click-icon" :type="item.clicked ? 'danger' : 'info'" v-for="(item) in goodTypes"
-        @click="onSelect(item)">{{ item.Name }}</el-tag> -->
         </div>
-        <el-table :data="useRetailStore.goods" style="width: 100%">
+        <el-divider />
+        <el-table :data="selectedGoods" style="width: 100%">
           <el-table-column type="selection" width="30" />
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column prop="Name" label="货品名称" width="100" />
@@ -64,11 +65,7 @@
             <el-input-number v-model="order.ID" :max=1000 :min=0 :value-on-clear=0 />
           </el-table-column> -->
           <el-table-column prop="Unit" label="单位" width="60" />
-          <el-table-column prop="Price" label="售价" width="100">
-            <template #default="scope">
-              <el-input v-model="scope.row.Price" />
-            </template>
-          </el-table-column>
+          <el-table-column prop="Price" label="售价/元" width="100" />
           <el-table-column label="增加">
             <template #default="scope">
               <el-button type="primary" @click="handleInsert(scope.row)">加入购物车</el-button>
@@ -83,12 +80,12 @@
 <script setup lang="ts">
 import { reactive, ref, h, onMounted } from 'vue'
 import { Plus } from "@element-plus/icons-vue"
-import { ElNotification, ElButton, ElTable, ElDialog, ElTableColumn, ElTabs, ElTag } from 'element-plus'
-import { ElRadioGroup, ElRadioButton, ElFormItem, ElInputNumber, ElTabPane, ElInput } from 'element-plus'
+import { ElNotification, ElButton, ElTable, ElDivider, ElTableColumn, ElTabs, ElTag } from 'element-plus'
+import { ElRadioGroup, ElRadioButton, ElText, ElInputNumber, ElTabPane, ElInput } from 'element-plus'
 // import Dialog from './dialog.vue'
-import { GoodType, Goods, OrderGoods, Order, Tab } from '@/common/entity'
+import { GoodType, Goods, OrderGoods, Order, Tab, Brand } from '@/common/entity'
 import { retailStore } from '@/store/modules/retail'
-import { get, remove } from '@/api/goodType'
+import { get, remove, create } from '@/api/order'
 import { Operate } from '@/common/enum'
 import { useRoute } from 'vue-router'
 import { settingsStore } from "@/store/modules/settings"
@@ -107,14 +104,16 @@ let operate = ref<Number>(0)
 
 // 响应式dialog数据
 let currentDialogData = ref({})
+// 选中大分类
+const bigGoodType = ref<GoodType>({} as GoodType)
+// 选中大分类时的小分类一览
 const subGoodsType = reactive<GoodType[]>([])
-const goodType = ref<GoodType>({} as GoodType)
-// 全部货物，非显示
-const goods = reactive<Goods[]>([])
-// 货物，显示用
-const selectGoods = reactive<Goods[]>([])
-const item = ref<any>(null);
-const currentOrder = ref<Order>({} as Order);
+// 选中小分类
+const smallGoodType = ref<GoodType>({} as GoodType)
+// 选中品牌
+let selectBrand = ref<Brand>({} as Brand)
+// 选中大分类，小分类，品牌时的过滤显示用
+const selectedGoods = reactive<Goods[]>([])
 
 // dialog表示flag
 let dialogFormVisible = ref(false)
@@ -139,19 +138,25 @@ const removeTab = (targetName: string) => {
   editableTabsValue.value = activeName
   editableTabs.value = tabs.filter((tab) => tab.Name !== targetName)
 }
-// 操作-》添加
+// 添加商品进入购物车
 const handleInsert = (target: Goods) => {
-  console.log(target)
-  console.log(currentOrder.value.OrderGoods)
-  if (currentOrder.value.OrderGoods) {
-    // TODO how to judge plus or modify
-    currentOrder.value.OrderGoods.push({
-      ID: 1,
-    } as OrderGoods)
+  if (useRetailStore.currentOrder.OrderGoods == undefined) {
+    useRetailStore.currentOrder.OrderGoods = []
+  }
+  let orderGoods = useRetailStore.currentOrder.OrderGoods.find(orderGood => orderGood.ID == target.ID)
+  if (orderGoods) {
+    useRetailStore.currentOrder.OrderGoods.forEach(orderGood => {
+      if (orderGood.ID == target.ID) {
+        orderGood.Amount = orderGood.Amount + 1
+      }
+    })
   } else {
-    currentOrder.value.OrderGoods = []
-    currentOrder.value.OrderGoods.push({
-      ID: 1,
+    useRetailStore.currentOrder.OrderGoods.push({
+      ID: target.ID,
+      Name: target.Name,
+      BigGoodType: formatterBig(target),
+      SmallGoodType: formatterSmall(target),
+      Brand: formatterBrand(target)
     } as OrderGoods)
   }
 }
@@ -168,12 +173,38 @@ const handleEdit = (index: number, target: GoodType) => {
   dialogFormVisible.value = true
 }
 
-// 选中 货物大分类
-const onSelect = (select: GoodType) => {
-  subGoodsType.length = 0
-  select.children.forEach(goodsType => {
-    subGoodsType.push(goodsType)
+// 过滤查询
+const onSelect = (select: string) => {
+  // 变换大分类时，需要清除小分类选中
+  if (select == "BigGoodType") {
+    let goodType = useRetailStore.goodTypes.find(goodType => goodType.ID == bigGoodType.value.ID)
+    subGoodsType.length = 0
+    goodType?.children.forEach(goodsType => {
+      subGoodsType.push(goodsType)
+    })
+  }
+
+  selectedGoods.length = 0
+  useRetailStore.goods.filter(good => {
+    if (bigGoodType.value.ID == undefined) {
+      return true
+    }
+    return good.BigGoodType == bigGoodType.value.ID
+  }).filter(good => {
+    if (smallGoodType.value.ID == undefined) {
+      return true
+    }
+    return good.SmallGoodType == smallGoodType.value.ID
+  }).filter(good => {
+    if (selectBrand.value.ID == undefined) {
+      return true
+    }
+    return good.Brand == selectBrand.value.ID
+  }).forEach(good => {
+    selectedGoods.push(good)
   })
+
+
 }
 const doSearch = () => { }
 const doSubmit = () => { }
@@ -189,37 +220,62 @@ const addToBag = (goods: Goods) => { }
 // 2.3 如果localStorage内没有订单信息，则编辑该订单。
 onMounted(async () => {
   useSettingsStore.activePath = "/order"
-
-  let currentOrder = window.localStorage.getItem("currentOrder")
-  if (currentOrder != null) {
-
-  }
-  if (route.query.customer == undefined) {
+  if (useRetailStore.currentOrder.Name == undefined && route.query.customer == undefined) {
     return
   }
-  //这里反序列化获取参数
-  item.value = JSON.parse(route.query.customer as string)
+  if (useRetailStore.currentOrder.Name != undefined && route.query.customer == undefined) {
+    // 暂时什么都不做
+  }
+  if (useRetailStore.currentOrder.Name != undefined && route.query.customer != undefined) {
+    // 这里反序列化获取参数
+    let customer = JSON.parse(route.query.customer as string)
+    if (useRetailStore.currentOrder.Name == customer.Name) {
+      // 暂时什么都不做
+    } else {
+      // 替换当前订单，保存上一个订单到数据库
+      const order = {
+        ID: useRetailStore.currentOrder.ID,
+        Name: useRetailStore.currentOrder.Name,
+        OrderGoods: useRetailStore.currentOrder.OrderGoods,
+        AccountsReceivable: useRetailStore.currentOrder.AccountsReceivable,
+        ActualAccountsReceivable: useRetailStore.currentOrder.ActualAccountsReceivable,
+        Comment: useRetailStore.currentOrder.Comment,
+      } as Order
+      create(order)
+    }
+  }
+  if (useRetailStore.currentOrder.Name == undefined && route.query.customer != undefined) {
+    // 这里反序列化获取参数
+    let customer = JSON.parse(route.query.customer as string)
+    useRetailStore.currentOrder.Name = customer.Name
+  }
+
   editableTabs.value =
     [
       {
-        Title: item.value.Name + '_购物车',
-        Name: item.value.Phone + '2',
+        Title: useRetailStore.currentOrder.Name + '_购物车',
+        Name: useRetailStore.currentOrder.Name + '2',
         Content: 'Tab 2 content',
       } as Tab,
       {
-        Title: item.value.Name + '_新建订单',
-        Name: item.value.Phone + '1',
+        Title: useRetailStore.currentOrder.Name + '_新建订单',
+        Name: useRetailStore.currentOrder.Name + '1',
         Content: 'Tab 1 content',
       } as Tab,
     ]
+  useRetailStore.goods.forEach(good => {
+    selectedGoods.push(good)
+  })
+
+
 })
 </script>
 
 <style scoped>
 .tag_list {
   display: flex;
-  border-top: 1px solid rgba(151, 151, 151, 0.3);
-  border-bottom: 1px solid rgba(151, 151, 151, 0.3);
+  /* border-top: 1px solid rgba(151, 151, 151, 0.3); */
+  /* border-bottom: 1px solid rgba(151, 151, 151, 0.3); */
 }
 
 .click-icon {

@@ -4,6 +4,7 @@ import { get } from '@/api/customer'
 import { get as getGoods } from '@/api/goods'
 import { get as getGoodType } from '@/api/goodType'
 import { get as getBrands } from '@/api/brand'
+import { get as getOrders } from '@/api/order'
 import { Customer, Goods, GoodType, Brand, Order } from "@/common/entity"
 
 export const retailStore = defineStore('customers', () => {
@@ -13,6 +14,7 @@ export const retailStore = defineStore('customers', () => {
   const goodTypes = reactive<GoodType[]>([])
   const brands = reactive<Brand[]>([])
   const currentOrder = reactive<Order>({} as Order);
+  const orders = reactive<Order[]>([]);
 
   const getAllCustomers = async () => {
     customers.length = 0
@@ -71,6 +73,17 @@ export const retailStore = defineStore('customers', () => {
     })
   }
 
+  const getAllOrders = async () => {
+    orders.length = 0
+    getOrders().then(res => {
+      if (res) {
+        res.data.forEach((item: Order) => {
+          orders.push(item)
+        })
+      }
+    })
+  }
+
   return {
     customers,
     getAllCustomers,
@@ -80,7 +93,9 @@ export const retailStore = defineStore('customers', () => {
     getAllGoodTypes,
     brands,
     getAllBrands,
-    currentOrder
+    currentOrder,
+    getAllOrders,
+    orders,
   }
 })
 

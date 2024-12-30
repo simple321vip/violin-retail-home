@@ -59,7 +59,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/orderManagement',
-        component: () => import('@/view/goodtype/index.vue'),
+        component: () => import('@/view/orderManagement/index.vue'),
         meta: {
           name: '订单管理'
         }

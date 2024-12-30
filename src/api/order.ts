@@ -7,7 +7,7 @@ import { service } from '../utils/request'
  */
 const get = () => {
   return service({
-    url: '/retail/api/v1/order',
+    url: '/retail/api/v1/orders',
     method: 'GET',
   })
 }

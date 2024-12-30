@@ -119,10 +119,13 @@ interface OrderGoods {
 // 订单
 interface Order {
   ID: number,
-  Name: string,
+  Date: string,
+  CustomerName: string,
+  CustomerPhone: number,
   OrderGoods: Array<OrderGoods>,
   AccountsReceivable: number,
   ActualAccountsReceivable: number,
+  Status: number,
   Comment: string,
 }
 

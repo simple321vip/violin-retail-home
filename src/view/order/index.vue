@@ -220,22 +220,24 @@ const addToBag = (goods: Goods) => { }
 // 2.3 如果localStorage内没有订单信息，则编辑该订单。
 onMounted(async () => {
   useSettingsStore.activePath = "/order"
-  if (useRetailStore.currentOrder.Name == undefined && route.query.customer == undefined) {
+  if (useRetailStore.currentOrder.CustomerName == undefined && route.query.customer == undefined) {
     return
   }
-  if (useRetailStore.currentOrder.Name != undefined && route.query.customer == undefined) {
+  if (useRetailStore.currentOrder.CustomerName != undefined && route.query.customer == undefined) {
     // 暂时什么都不做
   }
-  if (useRetailStore.currentOrder.Name != undefined && route.query.customer != undefined) {
+  if (useRetailStore.currentOrder.CustomerName != undefined && route.query.customer != undefined) {
     // 这里反序列化获取参数
     let customer = JSON.parse(route.query.customer as string)
-    if (useRetailStore.currentOrder.Name == customer.Name) {
+    if (useRetailStore.currentOrder.CustomerName == customer.Name) {
       // 暂时什么都不做
     } else {
       // 替换当前订单，保存上一个订单到数据库
       const order = {
         ID: useRetailStore.currentOrder.ID,
-        Name: useRetailStore.currentOrder.Name,
+        Date: useRetailStore.currentOrder.Date,
+        CustomerName: useRetailStore.currentOrder.CustomerName,
+        CustomerPhone: useRetailStore.currentOrder.CustomerPhone,
         OrderGoods: useRetailStore.currentOrder.OrderGoods,
         AccountsReceivable: useRetailStore.currentOrder.AccountsReceivable,
         ActualAccountsReceivable: useRetailStore.currentOrder.ActualAccountsReceivable,
@@ -244,22 +246,22 @@ onMounted(async () => {
       create(order)
     }
   }
-  if (useRetailStore.currentOrder.Name == undefined && route.query.customer != undefined) {
+  if (useRetailStore.currentOrder.CustomerName == undefined && route.query.customer != undefined) {
     // 这里反序列化获取参数
     let customer = JSON.parse(route.query.customer as string)
-    useRetailStore.currentOrder.Name = customer.Name
+    useRetailStore.currentOrder.CustomerName = customer.Name
   }
 
   editableTabs.value =
     [
       {
-        Title: useRetailStore.currentOrder.Name + '_购物车',
-        Name: useRetailStore.currentOrder.Name + '2',
+        Title: useRetailStore.currentOrder.CustomerName + '_购物车',
+        Name: useRetailStore.currentOrder.CustomerName + '2',
         Content: 'Tab 2 content',
       } as Tab,
       {
-        Title: useRetailStore.currentOrder.Name + '_新建订单',
-        Name: useRetailStore.currentOrder.Name + '1',
+        Title: useRetailStore.currentOrder.CustomerName + '_新建订单',
+        Name: useRetailStore.currentOrder.CustomerName + '1',
         Content: 'Tab 1 content',
       } as Tab,
     ]
